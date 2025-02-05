@@ -1,0 +1,65 @@
+#! /bin/zsh
+
+### wardoc — categorize and auto-document recent commits into markdown that's suitable as a pretty release page
+
+# Selected from: gitmoji -l
+declare -A emojis=(
+     ':books:'       'Documentation'
+     ':sparkles:'    'Features'
+     ':bug:'         'Fixes'
+     ':wrench:'      'Configuration'
+     ':recycle:'     'Refactors'
+     ':zap:'         'Performance'
+     # ':tada:'        'Release'
+     ':lock:'        'Security'
+     ':boom:'        'Breaking Changes'
+     ':wastebasket:' 'Removals'
+     ':test_tube:'   'Testing'
+     ':lipstick:'    'User Interface'
+     ':zap:'         'Performance'
+
+     'fix:'      'Fixes'
+     'feat:'     'Features'
+     'refactor:' 'Refactors'
+     'docs:'     'Documentation'
+     'build:'    'Build Tooling'
+     'test:'     'Testing'
+     'style:'    'Styling'
+)
+
+# Get most recent tag and one before it
+tags=( $(git tag | tail -2) )
+range=${(j:...:)tags}
+# print $range
+
+# Could instead get this from parsing .git/config:remote.origin.url (url = git@github.com:MicahElliott/captain.git)
+# repo=${GITHUB_REPOSITORY?var must be set to something like: octocat/Hello-World}
+repo=$(git config remote.origin.url | sed -e 's/.*://' -e 's/.git$//')
+ghurl='https://github.com/'
+# repo="MicahElliott/captain"
+url="$ghurl$repo"
+
+releaseurl="$url/releases/tag/$tags[2]"
+print "# [${tags[2]}]($releaseurl)"
+print
+print "**[Full Changelog]($url/compare/$range)**"
+
+# Read into array
+# logs=$(git log --pretty=format:"%s (%h)" $range)
+lines=()
+# git log --pretty=format:"%s (%h)" $range | while read -r l; do lines+=$l; done
+git log --pretty=format:"%s (%h)" v2025.01.07...v2025.02.02 | while read -r l; do lines+=$l; done
+
+cats=( $(print -l $lines |cut -f1 -d' ' | sort -u) )
+# print $cats
+
+for c in $cats
+do if [[ -n $emojis[$c] ]]
+   then print "\n## $emojis[$c]"
+        logs=()
+        print -l $lines | grep $c | while read -r l; do logs+=$l; done
+        for l in $logs; do print -- "- $l"; done
+   fi
+done
+
+print -- "\n---\n_This release was created by [havoc](https://github.com/MicahElliott/havoc)_"
