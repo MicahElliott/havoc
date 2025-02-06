@@ -3,19 +3,29 @@
 > Cry 'Havoc,' and let slip the dogs of war
 > — _Mark Antony in Act 3, Scene 1 of Shakespeare's Julius Caesar_
 
-This is a very simple set of scripts that create a release suited for
-publishing; eg, to Github.
+This is a very simple set of scripts that create a documented "Release" suited
+for publishing; eg, to Github. Any executable script(s)/binarie(s) can become
+something that is a "releasable package". Then your users can quickly
+discover, download, and run your work with minimal effort.
 
 Havoc's `wardoc` (invoked implicitly) discovers commits since your last
 release and categorizes and auto-documents them into Markdown that's suitable
-as a pretty release page (and passes
-[markdownlint](https://github.com/markdownlint/markdownlint)).
+as a pretty release page (that passes
+[markdownlint](https://github.com/markdownlint/markdownlint) if you care).
 
 Havoc's `letslip` (which is what you invoke) creates a release that is
 uploaded to Github (and others maybe someday). This presently relies on having
 [gh](https://cli.github.com/) installed.
 
 ## Usage
+
+Havoc wants a little structure: releasable scripts and binaries in `bin/`, and
+a directory `releases/` for it to create releases and docs. So if you haven't
+already:
+
+```
+mkdir bin releases; mv MYRUNNABLES bin
+```
 
 Generate a "git tag" file, `releases/v2025.02.02.md`, and release tarball:
 
