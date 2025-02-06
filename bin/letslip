@@ -29,17 +29,20 @@ artifact=$releasedir/$projname-$vdt.tgz
 print "Creating artifact of runnable tools in bin dir: $artifact"
 tar czvf $artifact -C bin .
 
-print "Will create and push git tag: $vdt"
+print "\nWill create and push git tag: $vdt"
 read -qk "?Proceed? [y/n] " || exit 1
 print
 
-git tag $vdt
+if ! git tag $vdt; then print 'Unable to create tag.'; exit 1; fi
 git push origin $vdt
 
-wardoc
+doc=$releasedir/$vdt.md
+wardoc > $doc
+print "Created release doc ‘$doc’"
+read -qk '?Edit? [y/n] ' && $EDITOR $doc
 
-print "You should have already created and pushed a git tag: $vdt"
-print "Now manually upload $artifact to https://github.com/MicahElliott/$projname/releases"
+# print "You should have already created and pushed a git tag: $vdt"
+# print "Now manually upload $artifact to https://github.com/MicahElliott/$projname/releases"
 
-print "Creating a new release on github"
-gh release create $vdt $artifact
+print "\nCreating a new release on github"
+gh release create -t "$vdt" -F $doc $vdt $artifact
