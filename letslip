@@ -1,6 +1,6 @@
 #! /bin/zsh
 
-### letslip —
+### letslip — creates a release that is uploaded to Github
 
 # This "release process" could be automated with github actions, but this
 # script is so simple that I'm not bothering for now. And I still push
@@ -11,13 +11,20 @@
 # all its tools with:
 #   % eget micahelliott/captain
 
+if ! [[ -d bin ]]; then print "Expected to see executables in bin/ dir."; exit 1; fi
+
 suffix=
 if [[ -n $1 ]]; then suffix="-$1"; fi
 
 vdt=$(date +v%Y.%m.%d)$suffix
 projname=$(git config remote.origin.url | sed -e 's^.*/^^' -e 's/.git$//')
+releasedir=releases
+if ! [[ -d $releasedir ]]
+then print "Creating ‘$releasedir’ dir; you should add it to ‘.gitignore’.";
+     mkdir $releasedir;
+fi
 # artifact=captain-$vdt.tgz
-artifact=$projname-$vdt.tgz
+artifact=$releasedir/$projname-$vdt.tgz
 
 print "Creating artifact of runnable tools in bin dir: $artifact"
 tar czvf $artifact -C bin .
@@ -28,6 +35,8 @@ print
 
 git tag $vdt
 git push origin $vdt
+
+wardoc
 
 print "You should have already created and pushed a git tag: $vdt"
 print "Now manually upload $artifact to https://github.com/MicahElliott/$projname/releases"

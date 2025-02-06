@@ -1,16 +1,16 @@
 # Havoc
 
 > Cry 'Havoc,' and let slip the dogs of war
-> — Mark Antony in Act 3, Scene 1 of William Shakespeare's Julius Caesar
+> — _Mark Antony in Act 3, Scene 1 of Shakespeare's Julius Caesar_
 
 This is a very simple set of scripts that create a release suited for
 publishing; eg, to Github.
 
-Havoc discovers commits since your last release and categorizes and
-auto-documents them into markdown that's suitable as a pretty release page.
+Havoc's `wardoc` discovers commits since your last release and categorizes and
+auto-documents them into Markdown that's suitable as a pretty release page.
 
-Havoc's `letslip` creates a release that is uploaded to Github (and others in
-time). This presently relies on having [gh](https://cli.github.com/) installed.
+Havoc's `letslip` creates a release that is uploaded to Github (and others
+maybe someday). This presently relies on having [gh](https://cli.github.com/) installed.
 
 ## Usage
 

@@ -2,7 +2,7 @@
 
 ### wardoc — categorize and auto-document recent commits into markdown that's suitable as a pretty release page
 
-# Selected from: gitmoji -l
+# Selected kinda from: gitmoji -l
 declare -A emojis=(
      ':books:'       'Documentation'
      ':sparkles:'    'Features'
