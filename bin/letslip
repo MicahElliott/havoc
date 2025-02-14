@@ -29,13 +29,21 @@ artifact=$releasedir/$projname-$vdt.tgz
 print "Creating artifact of runnable tools in bin dir: $artifact"
 tar czvf $artifact -C bin .
 
+print "Creating checksum of artifact."
+shasum=$artifact.sha256
+# sha256sum --zero releases/havoc-v2025.02.06.tgz >releases/havoc-v2025.02.06.tgz.sha256
+# Comparing to clj-kondo, expected to have to do this, but eget is pretty flexible it seems
+# print -n $(sha256sum releases/captain-v2025.02.06.tgz |cut -f1 -d' ') >$shasum
+sha256sum $artifact >$shasum
+
 print "\nWill create and push git tag: $vdt"
 read -qk "?Proceed? [y/n] " || exit 1
 print
 
 if ! git tag $vdt; then print 'Unable to create tag.'; exit 1; fi
-git push origin $vdt
+git push origin $vdt || exit $?
 
+# Do the big job of creating doc
 doc=$releasedir/$vdt.md
 wardoc > $doc
 print "Created release doc ‘$doc’"
@@ -45,4 +53,4 @@ read -qk '?Edit? [y/n] ' && $EDITOR $doc
 # print "Now manually upload $artifact to https://github.com/MicahElliott/$projname/releases"
 
 print "\nCreating a new release on github"
-gh release create -t "$vdt" -F $doc $vdt $artifact
+gh release create -t "$vdt" -F $doc $vdt $artifact $shasum

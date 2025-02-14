@@ -54,6 +54,8 @@ lines=()
 git log --pretty=format:"%s (%h)" $range | while read -r l; do lines+=$l; done
 # git log --pretty=format:"%s (%h)" v2025.01.07...v2025.02.02 | while read -r l; do lines+=$l; done
 
+print "Commits to be included:\n$lines" >&2
+
 cats=( $(print -l $lines |cut -f1 -d' ' | sort -u) )
 # print $cats
 

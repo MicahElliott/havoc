@@ -5,8 +5,14 @@
 
 This is a very simple set of scripts that create a documented "Release" suited
 for publishing; eg, to Github. Any executable script(s)/binarie(s) can become
-something that is a "releasable package". Then your users can quickly
-discover, download, and run your work with minimal effort.
+something that is a "releasable package" with documentation and a predictable
+set of artifacts. Then your users can quickly discover, download, and run your
+work with minimal effort.
+
+One of Havoc's goals is to **make releases consistent**. If you browse across
+various projects' _Release_ pages, you won't see two that are alike! Check out
+Havoc's [Releases page](https://github.com/MicahElliott/havoc/releases) (also
+on right sidebar) for examples.
 
 Havoc's `wardoc` (invoked implicitly) discovers commits since your last
 release and categorizes and auto-documents them into Markdown that's suitable
@@ -26,6 +32,10 @@ already:
 ```
 mkdir bin releases; mv MYRUNNABLES bin
 ```
+
+You may want to add `releases/` to `.gitignore` since it will end up with a
+bunch of tarballs. Which is kinda the point of having a separate dir for this.
+Or something like [git-lfs](https://github.com/git-lfs/git-lfs) could be used.
 
 Generate a "git tag" file, `releases/v2025.02.02.md`, and release tarball:
 
@@ -69,6 +79,12 @@ The (editable) Markdown file looks something like this:
 _This release was created with [havoc](https://github.com/MicahElliott/havoc)._
 ```
 
+## Advanced usage
+
+If you need to release multiple times on a given day, you can pass an arg to
+Havoc indicating an additional suffix. This is also useful for creating a
+`-alpha` or `-beta` or some such label.
+
 ## Anti-features
 
 Havoc doesn't try to do anything smart with auto-creating versions according
@@ -103,3 +119,7 @@ make that process very simple:
   package manager for a variety of package types and OSs, geared toward
   installing CLI tools
 - [Eget](https://github.com/zyedidia/eget) — Easily install prebuilt binaries from GitHub
+
+### Fancy alternatives
+
+I considered using [git-cliff](https://github.com/orhun/git-cliff) but ...
