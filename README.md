@@ -19,7 +19,7 @@ release and categorizes and auto-documents them into Markdown that's suitable
 as a pretty release page (that passes
 [markdownlint](https://github.com/markdownlint/markdownlint) if you care).
 
-Havoc's `letslip` (which is what you invoke) creates a release that is
+Havoc's eponymous main script (which is what you invoke) creates a release that is
 uploaded to Github (and others maybe someday). This presently relies on having
 [gh](https://cli.github.com/) installed.
 
@@ -40,10 +40,10 @@ Or something like [git-lfs](https://github.com/git-lfs/git-lfs) could be used.
 Generate a "git tag" file, `releases/v2025.02.02.md`, and release tarball:
 
 ```
-% letslip
+% havoc
 Creating artifact of runnable tools in bin dir: releases/havoc-v2025.02.06.tgz
 ./
-./letslip
+./havoc
 ./wardoc
 
 Will create and push git tag: v2025.02.06

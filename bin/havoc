@@ -1,6 +1,6 @@
 #! /bin/zsh
 
-### letslip — creates a release that is uploaded to Github
+### havoc — creates a release that is uploaded to Github
 
 # This "release process" could be automated with github actions, but this
 # script is so simple that I'm not bothering for now. And I still push
