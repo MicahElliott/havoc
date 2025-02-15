@@ -23,6 +23,14 @@ suffix=
 if [[ -n $1 ]]; then suffix="-$1"; fi
 
 vdt=$(date +v%Y.%m.%d)$suffix
+
+if git tag | grep -q "$vdt"
+then print "Can’t create release ‘$vdt’ for tag that alrealy exists!"
+     print "Delete local and remote manually with:"
+     print "  git tag --delete $vdt; git push --delete origin $vdt"
+     exit 1
+fi
+
 print "CREATING NEW RELEASE: $vdt\n"
 
 projname=$(git config remote.origin.url | sed -e 's^.*/^^' -e 's/.git$//')
