@@ -17,12 +17,12 @@ suffix=
 if [[ -n $1 ]]; then suffix="-$1"; fi
 
 vdt=$(date +v%Y.%m.%d)$suffix
-print "Creating new release: $vdt"
+print "CREATING NEW RELEASE: $vdt\n"
 
 projname=$(git config remote.origin.url | sed -e 's^.*/^^' -e 's/.git$//')
 releasedir=releases
 if ! [[ -d $releasedir ]]
-then print "Creating ‘$releasedir’ dir; you should add it to ‘.gitignore’.";
+then print "\nCreating ‘$releasedir’ dir; you should add it to ‘.gitignore’.";
      mkdir $releasedir;
 fi
 # artifact=captain-$vdt.tgz
@@ -41,22 +41,22 @@ sha256sum $artifact >$shasum
 # Do the big job of creating doc
 doc=$releasedir/$vdt.md
 wardoc $vdt > $doc
-print "Created release doc: ‘$doc’"
+print "\nCreated release doc: ‘$doc’"
 read -qk '?Edit? [y/n] ' && $EDITOR $doc || {
-     print "\nHere’s the release doc:"
-     cat $doc
+     print "\nHere’s the release doc:\n"
+     cat $doc | sed 's/^/  | /'
+     # print -- '---'
 }
 
-print "\nWill create local git tag, then push tag and release to Github."
+print "\nWill create local git tag ‘$vdt’, then push tag and release to Github."
 read -qk "?Proceed? [y/n] " || {
-     print "Canceling release, deleting local tag, exiting."
-     git tag -d $vdt
+     # print "Canceling release, deleting local tag, exiting."
+     print "Canceling release, exiting."
+     # git tag -d $vdt
      exit 0
 }
+print "\n"
 
-print "\nWill create local git tag: $vdt"
-read -qk "?Proceed? [y/n] " || exit 1
-print
 if ! git tag $vdt; then print 'Unable to create tag.'; exit 1; fi
 
 git push origin $vdt || exit $?
@@ -64,5 +64,5 @@ git push origin $vdt || exit $?
 # print "You should have already created and pushed a git tag: $vdt"
 # print "Now manually upload $artifact to https://github.com/MicahElliott/$projname/releases"
 
-print "\nCreating a new release on github"
+print "\nCreating a new release on github."
 gh release create -t "$vdt" -F $doc $vdt $artifact $shasum

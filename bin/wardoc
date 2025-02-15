@@ -37,7 +37,9 @@ fi
 tags=( $(git tag | tail -2) )
 lasttag=$(git tag | tail -1)
 # range=${(j:...:)tags}
-range=$lasttag...$vdt
+# range=$lasttag...$vdt
+range=$lasttag...
+# print "\n\trange:" $range  >&2
 if (( $#tags == 0 )); then print 'No tags, something is wrong.'; exit 1; fi
 if (( $#tags == 1 ))
 then tag2=$tags[1]; # print 'Bootstrapping for first release'
@@ -55,15 +57,17 @@ url="$ghurl$repo"
 # releaseurl="$url/releases/tag/$tag2"
 releaseurl="$url/releases/tag/$vdt"
 # print "# [${tag2}]($releaseurl)\n"
-print "**[Full Changelog]($url/compare/$range)**"
+print "**[Full Changelog]($url/compare/$range$vdt)**"
 
 # Read into array
 # logs=$(git log --pretty=format:"%s (%h)" $range)
-lines=()
-git log --pretty=format:"%s (%h)" $range | while read -r l; do lines+=$l; done
+# lines=()
+# git log --pretty=format:"%s (%h)" $range >&2
+lines=( "${(@f)$( git log --pretty=format:"%s (%h)" $range )}" )
+# git log --pretty=format:"%s (%h)" $range | while read -r l; do lines+=$l; done
 # git log --pretty=format:"%s (%h)" v2025.01.07...v2025.02.02 | while read -r l; do lines+=$l; done
 
-print "Commits to be included:\n$lines" >&2
+print "\nCommits to be included:\n${(j:\n:)lines}" >&2
 
 cats=( $(print -l $lines |cut -f1 -d' ' | sort -u) )
 # print $cats
