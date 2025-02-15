@@ -13,6 +13,12 @@
 
 if ! [[ -d bin ]]; then print "Expected to see executables in bin/ dir."; exit 1; fi
 
+pending=$(git cherry -v | wc -l)
+if (( pending != 0 ))
+then print "Detected local unpushed changes; push those and try again!"
+     exit 1
+fi
+
 suffix=
 if [[ -n $1 ]]; then suffix="-$1"; fi
 
