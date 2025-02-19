@@ -2,11 +2,17 @@
 
 ### wardoc — categorize and auto-document recent commits into markdown that's suitable as a pretty release page
 
+start=$argv[1]
+newtag=$argv[2]
+range=$argv[3]
+
+print -- start: $start -- range: $range -- newtag: $newtag >&2
+
 # Selected kinda from: gitmoji -l
 declare -A emojis=(
      ':books:'       'Documentation'
      ':sparkles:'    'Features'
-     ':bug:'         'Fixes'
+     ':bug:'         'Bug Fixes'
      ':wrench:'      'Configuration'
      ':recycle:'     'Refactors'
      ':zap:'         'Performance'
@@ -18,34 +24,15 @@ declare -A emojis=(
      ':lipstick:'    'User Interface'
      ':zap:'         'Performance'
 
-     'fix:'      'Fixes'
+     'fix:'      'Bug Fixes'
      'feat:'     'Features'
      'refactor:' 'Refactors'
      'docs:'     'Documentation'
      'build:'    'Build Tooling'
      'test:'     'Testing'
      'style:'    'Styling'
+     'breaking change:' 'Breaking Changes'
 )
-
-# Allow for suffix, and for invoking directly
-if [[ -n $argv[1] ]]
-then vdt=$argv[1]
-else vdt=$(date +v%Y.%m.%d) # default to just today's date
-fi
-
-# Get most recent tag and one before it
-tags=( $(git tag | tail -2) )
-lasttag=$(git tag | tail -1)
-# range=${(j:...:)tags}
-# range=$lasttag...$vdt
-range=$lasttag...
-# print "\n\trange:" $range  >&2
-if (( $#tags == 0 )); then print 'No tags, something is wrong.'; exit 1; fi
-if (( $#tags == 1 ))
-then tag2=$tags[1]; # print 'Bootstrapping for first release'
-else tag2=$tags[2]
-fi
-# print tags: $tags -- range: $range
 
 # Could instead get this from parsing .git/config:remote.origin.url (url = git@github.com:MicahElliott/captain.git)
 # repo=${GITHUB_REPOSITORY?var must be set to something like: octocat/Hello-World}
@@ -55,17 +42,23 @@ ghurl='https://github.com/'
 url="$ghurl$repo"
 
 # releaseurl="$url/releases/tag/$tag2"
-releaseurl="$url/releases/tag/$vdt"
+releaseurl="$url/releases/tag/$newtag"
 # print "# [${tag2}]($releaseurl)\n"
-print "**[Full Changelog]($url/compare/$range$vdt)**"
+# This is wrong if range is date-based, but ignore
+# print "**[Full Changelog]($url/compare/$range$newtag)**"
+print "**[Full Changelog]($url/compare/$start...$newtag)**"
 
 # Read into array
 # logs=$(git log --pretty=format:"%s (%h)" $range)
 # lines=()
 # git log --pretty=format:"%s (%h)" $range >&2
-lines=( "${(@f)$( git log --pretty=format:"%s (%h)" $range )}" )
+lines=( "${(@f)$( git log --pretty=format:"%s (%h)" $=range )}" )
+# print "git log --pretty=format:'(%h)' $range" >&2
 # git log --pretty=format:"%s (%h)" $range | while read -r l; do lines+=$l; done
 # git log --pretty=format:"%s (%h)" v2025.01.07...v2025.02.02 | while read -r l; do lines+=$l; done
+
+# TODO summarize change with LLM
+# ( print "Summarize the following git commits in a couple paragraphs" ; git log HEAD~19 ) | llm
 
 print "\nCommits to be included:\n${(j:\n:)lines}" >&2
 

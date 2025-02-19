@@ -79,11 +79,20 @@ The (editable) Markdown file looks something like this:
 _This release was created with [havoc](https://github.com/MicahElliott/havoc)._
 ```
 
-## Advanced usage
+## Advanced usage (optional)
+
+### Frequent releases
 
 If you need to release multiple times on a given day, you can pass an arg to
 Havoc indicating an additional suffix. This is also useful for creating a
 `-alpha` or `-beta` or some such label.
+
+### LLM summaries
+
+LLMs are well suited to the task of summarizing commits. Havoc supports such
+automatic generation. It uses [llm cli](https://github.com/simonw/llm), so you
+have to configure it if you want to use this feature. With this option, a
+"Summary" is added to the top of the categorized commit listing.
 
 ## Anti-features
 
