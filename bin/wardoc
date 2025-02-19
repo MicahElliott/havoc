@@ -8,30 +8,60 @@ range=$argv[3]
 
 print -- start: $start -- range: $range -- newtag: $newtag >&2
 
+feat=':new: Features'
+bug=':mechanic: Fixes (problems/brokenness)'
+misc=':basket: Other/Misc (non-user facing)'
+breaking=':bomb: Breaking Changes'
+crises=':comet: Crises'
+
 # Selected kinda from: gitmoji -l
 declare -A emojis=(
-     ':books:'       'Documentation'
-     ':sparkles:'    'Features'
-     ':bug:'         'Bug Fixes'
-     ':wrench:'      'Configuration'
-     ':recycle:'     'Refactors'
-     ':zap:'         'Performance'
-     # ':tada:'        'Release'
-     ':lock:'        'Security'
-     ':boom:'        'Breaking Changes'
-     ':wastebasket:' 'Removals'
-     ':test_tube:'   'Testing'
-     ':lipstick:'    'User Interface'
-     ':zap:'         'Performance'
+     # GITMOJI (my version)
+     ':sparkles:'    $feat  # Features
+     ':tada:'        $feat   # begin project or major feature
+     ':books:'       $feat  # Documentation
+     # ':books:'       $feat  # docs/comments (also memo)
+     ':zap:'         $feat  # Performance
+     ':lock:'        $feat  # Security/Privacy
+     ':zap:'         $feat  # perf (also racehorse/rabbit)
+     ':wheelchair:'  $feat  # accessibility
+     ':lipstick:'    $feat   # User Interface
+     ':zap:'         $feat   # Performance
+     ':abc:'         $feat  # i18n
+     ':construction:' $feat # WIP, progress on incomplete feature
 
-     'fix:'      'Bug Fixes'
-     'feat:'     'Features'
-     'refactor:' 'Refactors'
-     'docs:'     'Documentation'
-     'build:'    'Build Tooling'
-     'test:'     'Testing'
-     'style:'    'Styling'
-     'breaking change:' 'Breaking Changes'
+     ':bug:'         $bug   # Bug Fixes
+     ':wastebasket:' $bug   # Removals
+
+     ':wrench:'      $misc  # Configuration
+     ':recycle:'     $misc  # Refactors
+     ':rat:'         $misc # tests (also lab_coat/test_tube)
+     ':flags:'       $misc # feature flag
+     ':guard:'       $misc # compiler/linter/CI problem (temporary)
+     ':ledger:'      $misc # logs (also satellite/mag)
+     ':package:'     $misc # update deps (arrow_up)
+     ':recycle:'     $misc # refactor/move things (also truck)
+     ':poop:'        $misc # write bad code (OR remove code?)
+     ':wrench:'      $misc # config (also hammer)
+     ':bricks:'      $misc # infra
+     ':key:'         $misc # secrets
+     ':alien:'       $misc # 3rd-party API changes
+     ':robot:'       $misc # automation
+     ':alembic:'     $misc # experiments
+     ':stethoscope:' $misc # health-check
+     ':thread:'      $misc # concurrency
+
+     ':boom:'        $breaking # Breaking Changes
+
+     # MORE STANDARD
+     'feat:'     $feat # Features
+     'docs:'     $feat # Documentation
+     'fix:'      $bug  # Bug Fixes
+     'refactor:' $misc # Refactors
+     'build:'    $misc # Build Tooling
+     'test:'     $misc # Testing
+     'style:'    $misc # Styling
+     'breaking change:' $breaking # Breaking Changes
 )
 
 # Could instead get this from parsing .git/config:remote.origin.url (url = git@github.com:MicahElliott/captain.git)
