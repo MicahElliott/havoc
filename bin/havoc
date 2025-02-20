@@ -130,9 +130,16 @@ shasum=$artifact.sha256
 # print -n $(sha256sum releases/captain-v2025.02.06.tgz |cut -f1 -d' ') >$shasum
 sha256sum $artifact >$shasum
 
+dosummary=0
+print "\nA summary/overview section written by LLM can be generated."
+if type llm >/dev/null # check if llm command installed
+then read -qk '?Generate? [y/n] ' && dosummary=1
+else print "LLM can be installed from: https://github.com/simonw/llm"
+fi
+
 # Do the big job of creating doc
 doc=$releasedir/$vdt.md
-wardoc $start $newtag $range > $doc
+wardoc $start $newtag $range $dosummary > $doc
 print "\nCreated release doc: ‘$doc’"
 read -qk '?Edit? [y/n] ' && $EDITOR $doc || {
      print "\nHere’s the release doc:\n"
