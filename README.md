@@ -20,8 +20,16 @@ as a pretty release page (that passes
 [markdownlint](https://github.com/markdownlint/markdownlint) if you care).
 
 Havoc's eponymous main script (which is all you need to invoke) creates a
-release that is uploaded to Github (and others maybe someday). This presently
-relies on having [gh](https://cli.github.com/) (the Github CLI) installed.
+release that is uploaded to Github (and others maybe someday).
+
+## Dependencies
+
+Havoc should run fine on **any Linux or Mac or WSL**.
+
+Uploading presently relies on having **[gh](https://cli.github.com/) (the Github
+CLI)** installed.
+
+Generating a summary relies on **[llm cli](https://github.com/simonw/llm)**.
 
 ## Usage
 
@@ -91,9 +99,9 @@ Havoc indicating an additional suffix. This is also useful for creating a
 ### LLM summaries
 
 LLMs are well suited to the task of summarizing commits. Havoc supports such
-automatic generation. It uses [llm cli](https://github.com/simonw/llm), so you
-have to configure it if you want to use this feature. With this option, a
-"Summary" is added to the top of the categorized commit listing.
+automatic generation. It uses `llm`, so you have to configure it if you want
+to use this feature. With this option, a "Summary" is added to the top of the
+categorized commit listing.
 
 ### Generated SHA for verification
 
