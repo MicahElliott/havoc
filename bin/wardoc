@@ -15,7 +15,7 @@ breaking=':bomb: Breaking Changes'
 crises=':comet: Crises'
 
 # Selected kinda from: gitmoji -l
-declare -A emojis=(
+declare -A bucketmap=(
      # GITMOJI (my version)
      ':sparkles:'    $feat # Features
      ':tada:'        $feat # begin project or major feature
@@ -52,7 +52,7 @@ declare -A emojis=(
 
      ':boom:'        $breaking # Breaking Changes
 
-     # MORE STANDARD
+     # MORE STANDARD (traditional)
      'feat:'     $feat # Features
      'docs:'     $feat # Documentation
      'fix:'      $bugs  # Bug Fixes
@@ -61,6 +61,17 @@ declare -A emojis=(
      'test:'     $misc # Testing
      'style:'    $misc # Styling
      'breaking change:' $breaking # Breaking Changes
+)
+
+declare -A trademojis=(
+     'feat:'     ':sparkles:'
+     'docs:'     ':sparkles:'
+     'fix:'      ':bug:'
+     'refactor:' ':misc:'
+     'build:'    ':misc:'
+     'test:'     ':misc:'
+     'style:'    ':misc:'
+     'breaking change:' ':boom:'
 )
 
 # Could instead get this from parsing .git/config:remote.origin.url (url = git@github.com:MicahElliott/captain.git)
@@ -101,8 +112,12 @@ for bucket in $buckets
 do   curs=()
      for c in $commits
      do   p=$(cut -f1 -d' ' <<< $c)
-          if [[ $emojis[$p] == $bucket ]]
-          then curs+=$c
+          if [[ $bucketmap[$p] == $bucket ]]
+          then # print -- p: $p -- t: $trademojis[$p]
+               trad="$trademojis[$p]"
+               # if (( $trademojis[(Ie)$p] ))
+               if [[ -n $trad ]]; then c="$trad $c"; fi
+               curs+=$c
           fi
      done
      if (( $#curs > 0 ))
@@ -113,8 +128,8 @@ done
 
 # Old way, making a new bucket for each prefix
 # for p in $prefixes
-# do if [[ -n $emojis[$p] ]]
-#    then print "\n## $emojis[$p]\n"
+# do if [[ -n $bucketmap[$p] ]]
+#    then print "\n## $bucketmap[$p]\n"
 #         logs=()
 #         print -l $commits | grep $p | while read -r l; do logs+=$l; done
 #         for l in $logs; do print -- "- $l"; done

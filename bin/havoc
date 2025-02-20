@@ -143,7 +143,7 @@ read -qk '?Edit? [y/n] ' && $EDITOR $doc || {
 print "\nWill create local git tag ‘$newtag’, then push tag and release to Github."
 read -qk "?Proceed? [y/n] " || {
      # print "Canceling release, deleting local tag, exiting."
-     print "Canceling release, exiting."
+     print "\nCanceling release, exiting."
      # git tag -d $newtag
      exit 0
 }
