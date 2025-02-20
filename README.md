@@ -31,6 +31,9 @@ CLI)** installed.
 
 Generating a summary relies on **[llm cli](https://github.com/simonw/llm)**.
 
+If you have `bat` installed, you will see a nicer local display of the
+generated doc.
+
 ## Usage
 
 Havoc wants a little structure: releasable scripts and binaries in `bin/`, and

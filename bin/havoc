@@ -115,7 +115,10 @@ wardoc $start $newtag $range $dosummary > $doc
 print "\nCreated release doc: ‘$doc’"
 read -qk '?Edit? [y/n] ' && $EDITOR $doc || {
      print "\nHere’s the release doc:\n"
-     cat $doc | sed 's/^/  | /'
+     if type bat >/dev/null # use bat if installed
+     then bat $doc
+     else cat $doc | sed 's/^/  | /'
+     fi
 }
 
 print "\nWill create local git tag ‘$newtag’, then push tag and release to Github."
