@@ -14,17 +14,16 @@
 if ! [[ -d bin ]]; then print "WARNING: Expected to see executables in bin/ dir.\n"; fi
 
 pending=( $(git cherry -v 2>/dev/null) ); es=$?
-print pending: $pending
+# print pending: $pending
 if (( $es > 0 ))
 then print "Must be on checked out branch"; exit $es
 fi
 
 unpushed=$(wc -l <<< $pending); es=$?
 if (( $#pending > 0 ))
-then print "Detected local unpushed changes; push those and try again!"
-     exit 1
+then print "WARNING: Detected local unpushed changes; you might want to push those and try again!"
+     # exit 1 # allow it anyway in case intentional
 fi
-
 
 # Enable a suffix as arg1
 suffix=
