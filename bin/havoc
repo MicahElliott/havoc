@@ -96,8 +96,8 @@ artifact=$releasedir/$projname-$vdt.tgz
 print "Creating artifact of runnable tools in bin dir: $artifact"
 tar czvf $artifact -C bin .
 
-print "Creating checksum of artifact."
 shasum=$artifact.sha256
+print "Creating checksum of artifact: $shasum"
 # Comparing to clj-kondo, expected to have to do this, but eget is pretty flexible it seems
 # print -n $(sha256sum releases/captain-v2025.02.06.tgz |cut -f1 -d' ') >$shasum
 sha256sum $artifact >$shasum
