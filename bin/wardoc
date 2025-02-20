@@ -10,7 +10,8 @@ range=$argv[3]
 dosummary=$argv[4]
 
 # Format of commit lines can be customized
-fmt=${HAVOC_COMMIT_FORMAT-'%s (%h)'}
+# Consider showing author name and date in defaults: %an, %aI
+fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) (:sunglasses:%an)'}
 
 # print -- start: $start -- newtag: $newtag -- range: $range >&2
 
