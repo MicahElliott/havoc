@@ -6,7 +6,7 @@ start=$argv[1]
 newtag=$argv[2]
 range=$argv[3]
 
-print -- start: $start -- newtag: $newtag -- range: $range >&2
+# print -- start: $start -- newtag: $newtag -- range: $range >&2
 
 feat=':new: Features'
 bugs=':mechanic: Fixes (problems/brokenness)'
@@ -74,8 +74,6 @@ declare -A trademojis=(
      'breaking change:' ':boom:'
 )
 
-# Could instead get this from parsing .git/config:remote.origin.url (url = git@github.com:MicahElliott/captain.git)
-# repo=${GITHUB_REPOSITORY?var must be set to something like: octocat/Hello-World}
 repo=$(git config remote.origin.url | sed -e 's/.*://' -e 's/.git$//')
 ghurl='https://github.com/'
 # repo="MicahElliott/captain"
@@ -83,19 +81,10 @@ url="$ghurl$repo"
 
 # releaseurl="$url/releases/tag/$tag2"
 releaseurl="$url/releases/tag/$newtag"
-# print "# [${tag2}]($releaseurl)\n"
-# This is wrong if range is date-based, but ignore
-# print "**[Full Changelog]($url/compare/$range$newtag)**"
 print "**[Full Changelog]($url/compare/$start...$newtag)**"
 
 # Read into array
-# logs=$(git log --pretty=format:"%s (%h)" $range)
-# commits=()
-# git log --pretty=format:"%s (%h)" $range >&2
 commits=( "${(@f)$( git log --pretty=format:"%s (%h)" $=range )}" )
-# print "git log --pretty=format:'(%h)' $range" >&2
-# git log --pretty=format:"%s (%h)" $range | while read -r l; do lines+=$l; done
-# git log --pretty=format:"%s (%h)" v2025.01.07...v2025.02.02 | while read -r l; do lines+=$l; done
 
 # TODO summarize change with LLM
 # ( print "Summarize the following git commits in a couple paragraphs" ; git log HEAD~19 ) | llm
@@ -103,19 +92,21 @@ commits=( "${(@f)$( git log --pretty=format:"%s (%h)" $=range )}" )
 print "\nCommits to be included:\n${(j:\n:)commits}" >&2
 
 prefixes=( $(print -l $commits |cut -f1 -d' ' | sort -u) )
-print prefixes: $prefixes >2
+# print prefixes: $prefixes >2
 
 # Print each bucket with all of its commit types in it.
-# Eg, feat bucket has sparkles and books together.
+# Eg, feat bucket has sparkles/feat and books/docs together.
 buckets=( "$feat" "$bugs" "$misc" "$breaking" "$crises" )
 for bucket in $buckets
 do   curs=()
      for c in $commits
-     do   p=$(cut -f1 -d' ' <<< $c)
-          if [[ $bucketmap[$p] == $bucket ]]
-          then # print -- p: $p -- t: $trademojis[$p]
-               trad="$trademojis[$p]"
-               # if (( $trademojis[(Ie)$p] ))
+     do   pre=$(cut -f1 -d' ' <<< $c)
+          # This has the added benefit of selecting only the registered prefixes,
+          # so commit not following the proper pattern will be auto-discarded.
+          if [[ $bucketmap[$pre] == $bucket ]]
+          then # print -- p: $pre -- t: $trademojis[$pre]
+               # Prefix traditional style with emojis
+               trad="$trademojis[$pre]"
                if [[ -n $trad ]]; then c="$trad $c"; fi
                curs+=$c
           fi
@@ -125,15 +116,5 @@ do   curs=()
           for x in $curs; do print -- "- $x"; done
      fi
 done
-
-# Old way, making a new bucket for each prefix
-# for p in $prefixes
-# do if [[ -n $bucketmap[$p] ]]
-#    then print "\n## $bucketmap[$p]\n"
-#         logs=()
-#         print -l $commits | grep $p | while read -r l; do logs+=$l; done
-#         for l in $logs; do print -- "- $l"; done
-#    fi
-# done
 
 print -- "\n_This release was created with [havoc](https://github.com/MicahElliott/havoc)._"
