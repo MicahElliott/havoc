@@ -6,10 +6,10 @@ start=$argv[1]
 newtag=$argv[2]
 range=$argv[3]
 
-print -- start: $start -- range: $range -- newtag: $newtag >&2
+print -- start: $start -- newtag: $newtag -- range: $range >&2
 
 feat=':new: Features'
-bug=':mechanic: Fixes (problems/brokenness)'
+bugs=':mechanic: Fixes (problems/brokenness)'
 misc=':basket: Other/Misc (non-user facing)'
 breaking=':bomb: Breaking Changes'
 crises=':comet: Crises'
@@ -17,24 +17,23 @@ crises=':comet: Crises'
 # Selected kinda from: gitmoji -l
 declare -A emojis=(
      # GITMOJI (my version)
-     ':sparkles:'    $feat  # Features
-     ':tada:'        $feat   # begin project or major feature
-     ':books:'       $feat  # Documentation
-     # ':books:'       $feat  # docs/comments (also memo)
-     ':zap:'         $feat  # Performance
-     ':lock:'        $feat  # Security/Privacy
-     ':zap:'         $feat  # perf (also racehorse/rabbit)
-     ':wheelchair:'  $feat  # accessibility
-     ':lipstick:'    $feat   # User Interface
-     ':zap:'         $feat   # Performance
-     ':abc:'         $feat  # i18n
+     ':sparkles:'    $feat # Features
+     ':tada:'        $feat # begin project or major feature
+     ':books:'       $feat # docs/comments (also memo)
+     ':zap:'         $feat # Performance
+     ':lock:'        $feat # Security/Privacy
+     ':zap:'         $feat # perf (also racehorse/rabbit)
+     ':wheelchair:'  $feat # accessibility
+     ':lipstick:'    $feat # User Interface
+     ':zap:'         $feat # Performance
+     ':abc:'         $feat # i18n
      ':construction:' $feat # WIP, progress on incomplete feature
 
-     ':bug:'         $bug   # Bug Fixes
-     ':wastebasket:' $bug   # Removals
+     ':bug:'         $bugs # Bug Fixes
+     ':wastebasket:' $bugs # Removals
 
-     ':wrench:'      $misc  # Configuration
-     ':recycle:'     $misc  # Refactors
+     ':wrench:'      $misc # Configuration
+     ':recycle:'     $misc # Refactors
      ':rat:'         $misc # tests (also lab_coat/test_tube)
      ':flags:'       $misc # feature flag
      ':guard:'       $misc # compiler/linter/CI problem (temporary)
@@ -56,7 +55,7 @@ declare -A emojis=(
      # MORE STANDARD
      'feat:'     $feat # Features
      'docs:'     $feat # Documentation
-     'fix:'      $bug  # Bug Fixes
+     'fix:'      $bugs  # Bug Fixes
      'refactor:' $misc # Refactors
      'build:'    $misc # Build Tooling
      'test:'     $misc # Testing
@@ -80,9 +79,9 @@ print "**[Full Changelog]($url/compare/$start...$newtag)**"
 
 # Read into array
 # logs=$(git log --pretty=format:"%s (%h)" $range)
-# lines=()
+# commits=()
 # git log --pretty=format:"%s (%h)" $range >&2
-lines=( "${(@f)$( git log --pretty=format:"%s (%h)" $=range )}" )
+commits=( "${(@f)$( git log --pretty=format:"%s (%h)" $=range )}" )
 # print "git log --pretty=format:'(%h)' $range" >&2
 # git log --pretty=format:"%s (%h)" $range | while read -r l; do lines+=$l; done
 # git log --pretty=format:"%s (%h)" v2025.01.07...v2025.02.02 | while read -r l; do lines+=$l; done
@@ -90,18 +89,36 @@ lines=( "${(@f)$( git log --pretty=format:"%s (%h)" $=range )}" )
 # TODO summarize change with LLM
 # ( print "Summarize the following git commits in a couple paragraphs" ; git log HEAD~19 ) | llm
 
-print "\nCommits to be included:\n${(j:\n:)lines}" >&2
+print "\nCommits to be included:\n${(j:\n:)commits}" >&2
 
-cats=( $(print -l $lines |cut -f1 -d' ' | sort -u) )
-# print $cats
+prefixes=( $(print -l $commits |cut -f1 -d' ' | sort -u) )
+print prefixes: $prefixes >2
 
-for c in $cats
-do if [[ -n $emojis[$c] ]]
-   then print "\n## $emojis[$c]\n"
-        logs=()
-        print -l $lines | grep $c | while read -r l; do logs+=$l; done
-        for l in $logs; do print -- "- $l"; done
-   fi
+# Print each bucket with all of its commit types in it.
+# Eg, feat bucket has sparkles and books together.
+buckets=( "$feat" "$bugs" "$misc" "$breaking" "$crises" )
+for bucket in $buckets
+do   curs=()
+     for c in $commits
+     do   p=$(cut -f1 -d' ' <<< $c)
+          if [[ $emojis[$p] == $bucket ]]
+          then curs+=$c
+          fi
+     done
+     if (( $#curs > 0 ))
+     then print "\n## $bucket\n";
+          for x in $curs; do print -- "- $x"; done
+     fi
 done
+
+# Old way, making a new bucket for each prefix
+# for p in $prefixes
+# do if [[ -n $emojis[$p] ]]
+#    then print "\n## $emojis[$p]\n"
+#         logs=()
+#         print -l $commits | grep $p | while read -r l; do logs+=$l; done
+#         for l in $logs; do print -- "- $l"; done
+#    fi
+# done
 
 print -- "\n_This release was created with [havoc](https://github.com/MicahElliott/havoc)._"
