@@ -102,6 +102,13 @@ print "Creating checksum of artifact: $shasum"
 # print -n $(sha256sum releases/captain-v2025.02.06.tgz |cut -f1 -d' ') >$shasum
 sha256sum $artifact >$shasum
 
+# FIXME :zap: Would be nice to not call git here again
+ncommits=$(git log --oneline $range | wc -l)
+print "\nThere are $ncommits commits going into this release."
+if (( ncommits > 10 ))
+then print "That’s quite a few, so you could consider skipping LLM generation for time/cost concerns."
+fi
+
 dosummary=0
 print "\nA summary/overview section written by LLM can be generated."
 if type llm >/dev/null # check if llm command installed

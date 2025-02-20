@@ -93,8 +93,8 @@ print "**[Full Changelog]($url/compare/$start...$newtag)**"
 commits=( "${(@f)$( git log --pretty=format:$fmt $=range )}" )
 
 if (( dosummary > 0 ))
-then print "\nGenerating an LLM summary." >&2
-     print "## :loudspeaker: Overview"
+then print "\nGenerating an LLM summary; this can take a while...." >&2
+     print "\n## :loudspeaker: Overview"
      ( print "Summarize the following git commits in a couple paragraphs, without referring to commit hashes:\n\n" ; git log $range ) | llm
      print
 fi
