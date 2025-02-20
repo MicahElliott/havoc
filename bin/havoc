@@ -34,28 +34,12 @@ vdt=$(date +v%Y.%m.%d)$suffix
 isodt=$(date -I)
 # vdt=$dt$suffix
 
-
-
-# # Allow for suffix, and for invoking directly
-# if [[ -n $argv[1] ]]
-# then vdt=$argv[1]
-# else vdt=$(date +v%Y.%m.%d) # default to just today's date
-# fi
-
 # Get most recent tag and one before it
 tags=( $(git tag | tail -2) )
 lasttag=$(git tag | tail -1)
 # range=${(j:...:)tags}
 # range=$lasttag...$vdt
 range=$lasttag...
-
-# # print "\n\trange:" $range  >&2
-# if (( $#tags == 0 )); then print 'No tags, something is wrong.'; exit 1; fi
-# if (( $#tags == 1 ))
-# then end=$tags[1]; # print 'Bootstrapping for first release'
-# else end=$tags[2]
-# fi
-# # print tags: $tags -- range: $range
 
 branch=$(git branch --show-current)
 print "Working on git branch: $branch"
@@ -69,37 +53,28 @@ if [[ -z $REPLY ]]; then start=$lasttag; else start=$REPLY; fi
 
 if [[ $start =~ [0-9]{4}-[0-9]{2}-[0-9]{2} ]]
 then hint="($isodt)" isdate=1 end=$isodt
-# else hint='(leave blank to use today)'
-else hint="($vdt)"
+     else hint="($vdt)"
 fi
 
 print "Choose an ending point:"
 prompt="?tag|sha|date $hint> "
 read "$prompt"
-# if [[ -z $REPLY ]]; then end=$vdt; else end=$REPLY; fi
 if [[ -z $REPLY ]]; then end= enddt=$isodt; else end=$REPLY; fi
 
-if [[ -v isdate ]]
-then startdt=$start enddt=$isodt
-fi
+if [[ -v isdate ]]; then startdt=$start enddt=$isodt; fi
 
 print "\nChoose a new tag to use for this new release:"
 read "?tag ($vdt)> "
 if [[ -z $REPLY ]]; then newtag=$vdt; else newtag=$REPLY; fi
 
-# print "Using range: $start...$end"
-
 # Using dates requires different args/syntax, so translate to shas for consistent range
 if [[ $start =~ [0-9]{4}-[0-9]{2}-[0-9]{2} ]]
-# print -- git log --pretty '%h' --after $start --before $end
-then allshas=( $(git log --reverse --pretty=format:'%h' --after $start --before $enddt) )
+   then allshas=( $(git log --reverse --pretty=format:'%h' --after $start --before $enddt) )
      print allshas: $allshas
      start=$allshas[1] end=$allshas[-1]
-     # range="--after $start --before $end"
 fi
 range="$start...$end"
 print "Using as commit selection range: $range"
-# exit
 
 if git tag | grep -q "$vdt"
 then print "Can’t create release ‘$vdt’ for tag that alrealy exists!"
@@ -116,7 +91,6 @@ if ! [[ -d $releasedir ]]
 then print "\nCreating ‘$releasedir’ dir; you should add it to ‘.gitignore’.";
      mkdir $releasedir;
 fi
-# artifact=captain-$vdt.tgz
 artifact=$releasedir/$projname-$vdt.tgz
 
 print "Creating artifact of runnable tools in bin dir: $artifact"
@@ -124,7 +98,6 @@ tar czvf $artifact -C bin .
 
 print "Creating checksum of artifact."
 shasum=$artifact.sha256
-# sha256sum --zero releases/havoc-v2025.02.06.tgz >releases/havoc-v2025.02.06.tgz.sha256
 # Comparing to clj-kondo, expected to have to do this, but eget is pretty flexible it seems
 # print -n $(sha256sum releases/captain-v2025.02.06.tgz |cut -f1 -d' ') >$shasum
 sha256sum $artifact >$shasum
@@ -143,14 +116,11 @@ print "\nCreated release doc: ‘$doc’"
 read -qk '?Edit? [y/n] ' && $EDITOR $doc || {
      print "\nHere’s the release doc:\n"
      cat $doc | sed 's/^/  | /'
-     # print -- '---'
 }
 
 print "\nWill create local git tag ‘$newtag’, then push tag and release to Github."
 read -qk "?Proceed? [y/n] " || {
-     # print "Canceling release, deleting local tag, exiting."
      print "\nCanceling release, exiting."
-     # git tag -d $newtag
      exit 0
 }
 print "\n"

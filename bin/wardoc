@@ -1,6 +1,8 @@
 #! /bin/zsh
 
 ### wardoc — categorize and auto-document recent commits into markdown that's suitable as a pretty release page
+#
+# This is primarily called by havoc, but you can call it directly for testing.
 
 start=$argv[1]
 newtag=$argv[2]
@@ -80,7 +82,6 @@ ghurl='https://github.com/'
 # repo="MicahElliott/captain"
 url="$ghurl$repo"
 
-# releaseurl="$url/releases/tag/$tag2"
 releaseurl="$url/releases/tag/$newtag"
 print "**[Full Changelog]($url/compare/$start...$newtag)**"
 
