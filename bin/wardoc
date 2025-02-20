@@ -81,13 +81,16 @@ url="$ghurl$repo"
 
 # releaseurl="$url/releases/tag/$tag2"
 releaseurl="$url/releases/tag/$newtag"
-print "**[Full Changelog]($url/compare/$start...$newtag)**"
+print "**[Full Changelog]($url/compare/$start...$newtag)**\n"
 
 # Read into array
 commits=( "${(@f)$( git log --pretty=format:"%s (%h)" $=range )}" )
 
 # TODO summarize change with LLM
 # ( print "Summarize the following git commits in a couple paragraphs" ; git log HEAD~19 ) | llm
+print "\nGenerating an LLM summary." >&2
+print "## :loudspeaker: Overview"
+( print "Summarize the following git commits in a couple paragraphs, without referring to commit hashes:\n\n" ; git log $range ) | llm
 
 print "\nCommits to be included:\n${(j:\n:)commits}" >&2
 
