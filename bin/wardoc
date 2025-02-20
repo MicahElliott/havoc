@@ -9,6 +9,9 @@ newtag=$argv[2]
 range=$argv[3]
 dosummary=$argv[4]
 
+# Format of commit lines can be customized
+fmt=${HAVOC_COMMIT_FORMAT-'%s (%h)'}
+
 # print -- start: $start -- newtag: $newtag -- range: $range >&2
 
 feat=':new: Features'
@@ -86,7 +89,7 @@ releaseurl="$url/releases/tag/$newtag"
 print "**[Full Changelog]($url/compare/$start...$newtag)**"
 
 # Read into array
-commits=( "${(@f)$( git log --pretty=format:"%s (%h)" $=range )}" )
+commits=( "${(@f)$( git log --pretty=format:$fmt $=range )}" )
 
 if (( dosummary > 0 ))
 then print "\nGenerating an LLM summary." >&2

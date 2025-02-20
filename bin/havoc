@@ -21,7 +21,7 @@ fi
 
 unpushed=$(wc -l <<< $pending); es=$?
 if (( $#pending > 0 ))
-then print "WARNING: Detected local unpushed changes; you might want to push those and try again!"
+then print "WARNING: Detected local unpushed changes; you might want to push those and try again!\n"
      # exit 1 # allow it anyway in case intentional
 fi
 

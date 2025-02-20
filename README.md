@@ -109,6 +109,16 @@ Along with the release archive tarball, a similarly named file with a
 `.sha256` suffix is generated. This can be inspected manually, or can be used
 automatically by `eget` (see below).
 
+### Configuration
+
+You can change the format of each commit that is shown in the bulleted lists
+in the release doc. Eg, if you wanted to also see dates (`%aI`) and author
+names (`%an`) use the env var:
+
+```
+% HAVOC_COMMIT_FORMAT='%aI %s (%h) <%an>' havoc
+```
+
 ## Anti-features
 
 Havoc doesn't try to do anything smart with auto-creating versions according
