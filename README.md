@@ -3,11 +3,11 @@
 > Cry 'Havoc,' and let slip the dogs of war
 > — _Mark Antony in Act 3, Scene 1 of Shakespeare's Julius Caesar_
 
-This is a very simple set of scripts that create a documented "Release" suited
-for publishing; eg, to Github. Any executable script(s)/binarie(s) can become
-something that is a "releasable package" with documentation and a predictable
-set of artifacts. Then your users can quickly discover, download, and run your
-work with minimal effort.
+This is a very simple couple of scripts that create a documented "Release"
+suited for publishing; eg, to Github. Any executable script(s)/binarie(s) can
+become something that is a "releasable package" with documentation and a
+predictable set of artifacts. Then your users can quickly discover, download,
+and run your work with minimal effort.
 
 One of Havoc's goals is to **make releases consistent**. If you browse across
 various projects' _Release_ pages, you won't see two that are alike! Check out
@@ -19,9 +19,9 @@ release and categorizes and auto-documents them into Markdown that's suitable
 as a pretty release page (that passes
 [markdownlint](https://github.com/markdownlint/markdownlint) if you care).
 
-Havoc's eponymous main script (which is what you invoke) creates a release that is
-uploaded to Github (and others maybe someday). This presently relies on having
-[gh](https://cli.github.com/) installed.
+Havoc's eponymous main script (which is all you need to invoke) creates a
+release that is uploaded to Github (and others maybe someday). This presently
+relies on having [gh](https://cli.github.com/) (the Github CLI) installed.
 
 ## Usage
 
@@ -37,7 +37,8 @@ You may want to add `releases/` to `.gitignore` since it will end up with a
 bunch of tarballs. Which is kinda the point of having a separate dir for this.
 Or something like [git-lfs](https://github.com/git-lfs/git-lfs) could be used.
 
-Generate a "git tag" file, `releases/v2025.02.02.md`, and release tarball:
+Generate a "git release doc/tag" file, `releases/v2025.02.02.md`, and release
+tarball:
 
 ```
 % havoc
@@ -94,18 +95,27 @@ automatic generation. It uses [llm cli](https://github.com/simonw/llm), so you
 have to configure it if you want to use this feature. With this option, a
 "Summary" is added to the top of the categorized commit listing.
 
+### Generated SHA for verification
+
+Along with the release archive tarball, a similarly named file with a
+`.sha256` suffix is generated. This can be inspected manually, or can be used
+automatically by `eget` (see below).
+
 ## Anti-features
 
 Havoc doesn't try to do anything smart with auto-creating versions according
 to [SemVer](https://semver.org/). It presently is only
 [CalVer](https://calver.org/) oriented for its simplicity.
 
+It also does not do a release for you. It's up to you to get binaries onto
+machines, run migrations, etc.
+
 ## Background
 
 I like the idea of [gitmoji](https://github.com/carloscuesta/gitmoji-cli) but
-find it to be overkill (huge, slow, clunky, and too many categories). So Havoc
+find its CLI to be overkill (huge, slow, clunky, and too many categories). So Havoc
 supports pretty close to a subset, which comprise my opinionated choosing. See
-those supported `emojis` in [the source](./wardoc) (not worth re-documenting
+those supported `emojis` in [the source](./bin/wardoc) (not worth re-documenting
 here).
 
 I realize that `gh` is able to do a lot of what Havoc does. But Havoc supports
@@ -114,9 +124,9 @@ SemVer.
 
 Havoc also supports your standard categories from [Conventional
 Commits](https://www.conventionalcommits.org/en/v1.0.0/#specification), and
-from [Gommit](https://github.com/antham/gommit). IOW,
-if you're using any semi-standard prefixed commit convention, Havoc aims to
-work for you (or should soon enough).
+from [Gommit](https://github.com/antham/gommit). IOW, if you're using any
+semi-standard prefixed commit convention, Havoc aims to work for you (or
+should soon enough).
 
 ## Other related/helpful tools
 
