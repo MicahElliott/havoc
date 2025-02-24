@@ -3,6 +3,7 @@
 ### wardoc — categorize and auto-document recent commits into markdown that's suitable as a pretty release page
 #
 # This is primarily called by havoc, but you can call it directly for testing.
+# Note that it is non-interactive.
 
 start=$argv[1]
 newtag=$argv[2]
@@ -97,10 +98,13 @@ if (( dosummary > 0 ))
 then print "\nGenerating an LLM summary; this can take a while...." >&2
      print "\n## :loudspeaker: Overview (LLM generated)\n"
      ( print "Summarize the following git commits in a couple concise paragraphs, without referring to commit hashes:\n\n" ; git log $range ) | llm
-     print
+     # print
 fi
 
-print "\nCommits to be included:\n${(j:\n:)commits}" >&2
+if (( $#commits < 20 ))
+then print "\nCommits being considered for inclusion:\n${(j:\n:)commits}" >&2
+else print "\nToo many commits ($#commits) to show here." >&2
+fi
 
 prefixes=( $(print -l $commits |cut -f1 -d' ' | sort -u) )
 # print prefixes: $prefixes >2
