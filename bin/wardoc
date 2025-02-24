@@ -11,7 +11,8 @@ dosummary=$argv[4]
 
 # Format of commit lines can be customized
 # Consider showing author name and date in defaults: %an, %aI
-fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) (:sunglasses:%an)'}
+# fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) (:sunglasses:%an)'}
+fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) — _%an_'}
 
 # print -- start: $start -- newtag: $newtag -- range: $range >&2
 
@@ -94,8 +95,8 @@ commits=( "${(@f)$( git log --pretty=format:$fmt $=range )}" )
 
 if (( dosummary > 0 ))
 then print "\nGenerating an LLM summary; this can take a while...." >&2
-     print "\n## :loudspeaker: Overview"
-     ( print "Summarize the following git commits in a couple paragraphs, without referring to commit hashes:\n\n" ; git log $range ) | llm
+     print "\n## :loudspeaker: Overview (LLM generated)\n"
+     ( print "Summarize the following git commits in a couple concise paragraphs, without referring to commit hashes:\n\n" ; git log $range ) | llm
      print
 fi
 

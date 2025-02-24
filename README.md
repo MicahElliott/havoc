@@ -3,6 +3,10 @@
 > Cry 'Havoc,' and let slip the dogs of war
 > — _Mark Antony in Act 3, Scene 1 of Shakespeare's Julius Caesar_
 
+Check out Havoc's [Releases
+page](https://github.com/MicahElliott/havoc/releases) (also on right sidebar)
+for examples of what it does!
+
 This is a very simple couple of scripts that create a documented "Release"
 suited for publishing; eg, to Github. Any executable script(s)/binarie(s) can
 become something that is a "releasable package" with documentation and a
@@ -10,9 +14,7 @@ predictable set of artifacts. Then your users can quickly discover, download,
 and run your work with minimal effort.
 
 One of Havoc's goals is to **make releases consistent**. If you browse across
-various projects' _Release_ pages, you won't see two that are alike! Check out
-Havoc's [Releases page](https://github.com/MicahElliott/havoc/releases) (also
-on right sidebar) for examples.
+various projects' _Release_ pages, you won't see two that are alike!
 
 Havoc's `wardoc` (invoked implicitly) discovers commits since your last
 release and categorizes and auto-documents them into Markdown that's suitable
@@ -104,7 +106,8 @@ Havoc indicating an additional suffix. This is also useful for creating a
 LLMs are well suited to the task of summarizing commits. Havoc supports such
 automatic generation. It uses `llm`, so you have to configure it if you want
 to use this feature. With this option, a "Summary" is added to the top of the
-categorized commit listing.
+categorized commit listing. It is based on full commit bodies, not just
+subject line.
 
 ### Generated SHA for verification
 
