@@ -28,13 +28,19 @@ release that is uploaded to Github (and others maybe someday).
 
 Havoc should run fine on **any Linux or Mac or WSL**.
 
-Uploading presently relies on having **[gh](https://cli.github.com/) (the Github
-CLI)** installed.
+- Uploading presently relies on having **[gh](https://cli.github.com/) (the
+  Github CLI)** installed.
 
-Generating a summary relies on **[llm cli](https://github.com/simonw/llm)**.
+- [OPTIONAL] Generating a summary relies on **[llm cli](https://github.com/simonw/llm)**.
 
-If you have `bat` installed, you will see a nicer local display of the
-generated doc.
+- [OPTIONAL] If you have [bat](https://github.com/sharkdp/bat) installed, you
+  will see a nicer local display of the generated doc.
+
+## Install
+
+If you use [eget](https://github.com/zyedidia/eget) (highly recommended!),
+simply run: `eget micahelliott/havoc`. Othewise, you can download `havoc` and
+`wardoc` from [bin/](./bin) to somewhere on your `$PATH`.
 
 ## Usage
 
