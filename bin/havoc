@@ -93,8 +93,12 @@ then print "\nCreating ‘$releasedir’ dir; you should add it to ‘.gitignore
 fi
 artifact=$releasedir/$projname-$vdt.tgz
 
-print "Creating artifact of runnable tools in bin dir: $artifact"
-tar czvf $artifact -C bin .
+print "\nDo you want to create a tarball asset of ‘bin/’ dir?"
+if read -qk '?Create asset?> [y/n] '
+then doasset=1
+     print "Creating artifact of runnable tools in bin dir: $artifact"
+     tar czvf $artifact -C bin .
+fi
 
 shasum=$artifact.sha256
 print "Creating checksum of artifact: $shasum"
@@ -142,5 +146,9 @@ git push origin $newtag || exit $?
 # print "You should have already created and pushed a git tag: $newtag"
 # print "Now manually upload $artifact to https://github.com/MicahElliott/$projname/releases"
 
-print "\nCreating a new release on github."
-gh release create -t "$newtag" -F $doc $newtag $artifact $shasum
+pushables=($doc)
+if [[ -v doasset ]]; then pushables=($doc $artifact $shasum); fi
+
+print "\nCreating a new release on github with pushables:"
+print "  $pushables"
+gh release create -t "$newtag" -F $pushables
