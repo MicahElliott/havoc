@@ -1,8 +1,83 @@
-# Releasing with Havoc
+# Releasing with Havoc (Conventional Havoc)
 
-For the github project visit [here](https://github.com/MicahElliott/havoc).
+Havoc is a process (and a couple of
+[scripts](https://github.com/MicahElliott/havoc/bin)) to make git commits that
+are consistent, and will present optimally in a "Release Doc". This convention
+guide describes the "spec" for crafting such commits, and dovetails with
+[CalVer](https://calver.org/) by describing the features, fixes, and breaking
+changes, and miscellaneous categories made in commit messages.
 
-## Top-level
+Installing and using the scripts is covered in the
+[project readme](https://github.com/MicahElliott/havoc).
+
+This guide aims to be simialar to
+[Conventional Commits](https://www.conventionalcommits.org).
+
+## Terms
+
+- **Release Doc** — an emoji-beautified Markdown file posted alonside releases
+- **Category** — one of four top-level buckets that commits fall into in a Release Doc
+- **Prefix** — one of ~30 emoji for each commit subject
+- **Topic** — ad hoc optional label following a prefix
+- **Ticket** — a number or PR associated with a commit
+
+## Commits
+
+There are many good standards out there prescribing commit message rules. Adopt
+one and stick to it. Most of them boil down to something like
+[this gist](https://gist.github.com/turbo/efb8d57c145e00dc38907f9526b60f17):
+
+1. Commit messages must have a subject line and may have body copy, separated by a blank line.
+1. The subject line must not exceed 68 (50 originally) characters
+1. The subject line should be capitalized and must not end in a period
+1. The subject line must be written in imperative mood (Fix, not Fixed / Fixes etc.)
+1. The body copy must be wrapped at 72 columns
+1. The body copy must only contain explanations as to what and why, never how.
+
+Those rules should apply regardless of any tools you choose.
+
+Havoc is focused just on the _subject line_ and thus the first four rules,
+and its particularly short (and mostly intuitive) prefixes make it easy.
+
+An example:
+
+```
+:sparkles: [xyz] Add new frob to the whatzit (#123)
+```
+
+Each commit starts with an emoji _"prefix"_ written as text, like:
+`:sparkles:` (meaning: new feature). There are ~30 of these prefixes. They can
+be memorized, or written on a sticky note, used in a `.gitmessage` template,
+completed by your editor, and be supported by other tooling. They must be at
+the beginning of the subject. You can use just a small subset of them if you
+like, but more diversity makes your realeases more interesting/appealing.
+
+An optional feature _"topic"_ like `[xyz]` highlights a project or area you're
+working on. Tools like Magit already do special things with this syntax. (It
+can go anywhere on the line, but be consistent.)
+
+A very short imperative sentence follows to describe _"what"_.
+
+Finally, a _"ticket"_ (or _story_ if you prefer) number is an optional suffix
+(though its location is not enforced). Many tools can auto-link these in some
+contexts.
+
+That brings us to this spec:
+
+```
+:emoji: [topic] Short imperative WHAT sentence (#ticket)
+```
+
+And also supports a very simple message like this example:
+
+```
+:sparkles: Add new frob to the whatzit
+```
+
+## The Release Doc Hierarchy
+
+The following shows the four top-level sections and a description of what get
+filtered into them.
 
 ### 🚀 v2025.02.17 Release (also 📣 /  📀 / 🥁 / 🎺 / 🎀 )
 
@@ -54,49 +129,39 @@ For the github project visit [here](https://github.com/MicahElliott/havoc).
 
 ### 🔍 Changelog (also 📊 / 📔)
 
-## New/rare/code-only
+## FAQs
 
-- 📄 -- `page_facing_up` -- license
-- 🗡 -- `dagger`
-- 🦖 -- `t-rex` -- deprecated
-- ☄ -- `comet` -- catastrophe
-- 💡 -- `bulb` -- comments (CHANGE)
-- 🧛/ 🐉  `dragon`/`vampire` -- this will bite you
-- 🧚 -- `fairy` -- magic code
-- 🍝 -- `spaghetti` -- messy code needing cleanup
-- 👶 -- `baby` -- new untested code
-- 🍰 -- `cake` -- easiest way that could work (could be better)
-- 🚪 
-- 🐶 
-- 🎎 
-- 🧄/ 🦨  -- `garlic/skunk` -- smelly code
-- 💎 -- `gem` -- really nice
-- 🐐 -- `goat` -- greatest??
-- ⛳ -- `golf` -- unreadable
-- 🥽 -- `goggles` -- be careful
-- 🎤 -- `microphone` -- announce
-- 🍄 
-- 🐷 -- `pig` -- memory hog
-- ❓ -- `question`
-- 🦑 -- `squid`
-- 🎀 -- `ribbon`
-- 🧼 -- `soap` -- clean this up
-- 🌋 -- `volcano` -- will blow up
-- 📝 -- `pencil` -- typos
+### How were the prefixes chosen?
 
-Angular: https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines
+They are short single word emoji, and thus fit into a short commit line.
 
-https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional
+### Why not just stick with the Gitmoji standard?
+
+While Havoc was derived from gitmoji, I was put off by a few things about it:
+
+### Why did you increase the subject length max up to 68 chars?
+
+That's what Magit prescribes, and I find it more reasonable than 50. IME, it's
+challenging to get developers to even keep it under 100.
+
+## Prior Art Inspiration
+
+- [Angular Standard](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines)
+- [CommitLint](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional)
+
+Those prescribe something close to the following, where each prefix is also the
+release doc category:
+
 ```
   'build',
- ( 'chore', )
+ ('chore',)
   'ci',
   'docs',
   'feat',
   'fix',
   'perf',
   'refactor',
- ( 'revert', )
+ ('revert',)
   'style',
   'test'
 ```

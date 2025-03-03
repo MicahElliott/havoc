@@ -7,6 +7,10 @@ Check out Havoc's [Releases
 page](https://github.com/MicahElliott/havoc/releases) (also on right sidebar)
 for examples of what it does!
 
+Read [The Havoc Commit Spec](https://micahelliott.github.io/havoc/) for
+details on making standard commits that will show up beautifully in a
+_"Release Doc"_.
+
 This is a very simple couple of scripts that create a documented "Release"
 suited for publishing; eg, to Github. Any executable script(s)/binarie(s) can
 become something that is a "releasable package" with documentation and a
@@ -31,10 +35,10 @@ Havoc should run fine on **any Linux or Mac or WSL**.
 - Uploading presently relies on having **[gh](https://cli.github.com/) (the
   Github CLI)** installed.
 
-- [OPTIONAL] Generating a summary relies on **[llm cli](https://github.com/simonw/llm)**.
+- _[OPTIONAL]_ Generating a summary relies on **[llm cli](https://github.com/simonw/llm)**.
 
-- [OPTIONAL] If you have [bat](https://github.com/sharkdp/bat) installed, you
-  will see a nicer local display of the generated doc.
+- _[OPTIONAL]_ If you have **[bat](https://github.com/sharkdp/bat)**
+  installed, you will see a nicer local display of the generated doc.
 
 ## Install
 
@@ -137,7 +141,7 @@ Havoc doesn't try to do anything smart with auto-creating versions according
 to [SemVer](https://semver.org/). It presently is only
 [CalVer](https://calver.org/) oriented for its simplicity.
 
-It also does not do a release for you. It's up to you to get binaries onto
+It also does not deploy a release for you. It's up to you to get binaries onto
 machines, run migrations, etc.
 
 ## Background
