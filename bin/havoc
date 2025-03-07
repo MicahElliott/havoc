@@ -135,9 +135,16 @@ read -qk '?Edit? [y/n] ' && $EDITOR $doc
 print "\n\nWill create local git tag ‘$newtag’, then push tag and release to Github."
 read -qk "?Proceed? [y/n] " || {
      print "\nCanceling release, exiting."
+     print "\nYou may want to still manually push the new release doc somewhere to be shared."
      exit 0
 }
 print "\n"
+
+if ! type gh >/dev/null
+then print "Unable to fully create (push) release without ‘gh’ installed."
+     print "Install Github CLI from: https://cli.github.com/"
+     exit 1
+fi
 
 if ! git tag $newtag; then print 'Unable to create tag.'; exit 1; fi
 

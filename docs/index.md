@@ -170,8 +170,9 @@ They are short single word emoji, and thus fit into a short commit line.
 
 ### Why not just stick with the Gitmoji standard?
 
-While Havoc was inspired and partially derived from Gitmoji, I was put off by
-a few things about it:
+While Havoc was inspired and partially derived from
+[Gitmoji](https://github.com/carloscuesta/gitmoji), I was put off by a few
+things about it:
 
 - Gitmoji has 73 prefixes to learn; that feels like too many
 - many of the emoji are multiple words and too long for commit messages
