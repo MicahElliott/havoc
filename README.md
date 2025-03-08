@@ -135,6 +135,13 @@ names (`%an`) use the env var:
 % HAVOC_COMMIT_FORMAT='%aI %s (%h) <%an>' havoc
 ```
 
+There is a "tabular" option (`HAVOC_TABULAR=1`) that can print a table instead
+of a bulletted list of commits. It will use _Message_, _Author_, _Date_
+fields (and header). This is a nice way to go especially if you install
+[Github Sort
+Content](https://github.com/Mottie/GitHub-userscripts/wiki/GitHub-sort-content)
+in your browser, for sorting any table.
+
 ## Anti-features
 
 Havoc doesn't try to do anything smart with auto-creating versions according

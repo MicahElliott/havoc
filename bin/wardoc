@@ -15,6 +15,19 @@ dosummary=$argv[4]
 # fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) (:sunglasses:%an)'}
 fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) — _%an_'}
 
+# Option and setup to print tables
+# If going tabular, just ignore any user-set commit format
+tabular=${HAVOC_TABULAR}
+bullet='-' theader=
+if [[ -n $tabular ]]
+then bullet='|'
+     fmt='%s (%h) | %as | %an |'
+     theader='
+| Message | Author | Date |
+|---------|--------|------|
+'
+fi
+
 # print -- start: $start -- newtag: $newtag -- range: $range >&2
 
 feat=':new: Features'
@@ -91,7 +104,7 @@ url="$ghurl$repo"
 releaseurl="$url/releases/tag/$newtag"
 print "**[Full Changelog]($url/compare/$start...$newtag)**"
 
-# Read into array
+# Read formatted commits into array
 commits=( "${(@f)$( git log --pretty=format:$fmt $=range )}" )
 
 if (( dosummary > 0 ))
@@ -128,7 +141,8 @@ do   curs=()
      done
      if (( $#curs > 0 ))
      then print "\n## $bucket\n";
-          for x in $curs; do print -- "- $x"; done
+          print -n -- $theader
+          for x in $curs; do print -- "$bullet $x"; done
      fi
 done
 

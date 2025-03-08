@@ -11,9 +11,9 @@ _Miscellaneous_, _Breaking Changes_, and _Crisis_ categories made in commit
 messages.
 
 Note that developers don't need to know anything about Havoc to achieve its
-benefits — **developers only need to how to write a _subject_ line in a commit
-with an emoji prefix**, as documented in the [Commits](#commits) section
-below.
+benefits — **developers only need to know how to write a _subject_ line in a
+commit using an emoji prefix**, as documented in the [Commits](#commits)
+section below.
 
 These conventions are well suited for large projects with heavy process, and
 for very basic single-developer projects. It supports but does not require
