@@ -151,6 +151,20 @@ commits/reporting accordingly. You can run in team mode with:
 % HAVOC_TEAMWISE=1 havoc
 ```
 
+The team file should be named `devteams.tsv` and live in the directory you're
+running `havoc` from. The TSV format is like:
+
+```
+Larry David	Writers
+Billy Crystal	Writers
+Martin Short	Writers
+Chris Farley	Cast
+Bill Murray	Cast
+Tina Fey	Cast
+Lorne Michaels	Producers
+Dick Ebersol	Producers
+```
+
 That will print an additional summary for each team and create sections for
 each. The LLM prompt for teams is focused more on categorizing into noteworthy
 projects.
