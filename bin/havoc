@@ -96,15 +96,15 @@ artifact=$releasedir/$projname-$vdt.tgz
 print "\nDo you want to create a tarball asset of ‘bin/’ dir?"
 if read -qk '?Create asset?> [y/n] '
 then doasset=1
-     print "Creating artifact of runnable tools in bin dir: $artifact"
+     print "\nCreating artifact of runnable tools in bin dir: $artifact"
      tar czvf $artifact -C bin .
-fi
 
-shasum=$artifact.sha256
-print "Creating checksum of artifact: $shasum"
-# Comparing to clj-kondo, expected to have to do this, but eget is pretty flexible it seems
-# print -n $(sha256sum releases/captain-v2025.02.06.tgz |cut -f1 -d' ') >$shasum
-sha256sum $artifact >$shasum
+     shasum=$artifact.sha256
+     print "\nCreating checksum of artifact: $shasum"
+     # Comparing to clj-kondo, expected to have to do this, but eget is pretty flexible it seems
+     # print -n $(sha256sum releases/captain-v2025.02.06.tgz |cut -f1 -d' ') >$shasum
+     sha256sum $artifact >$shasum
+fi
 
 # FIXME :zap: Would be nice to not call git here again
 ncommits=$(git log --oneline $range | wc -l)
