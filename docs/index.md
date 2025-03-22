@@ -197,10 +197,27 @@ is much less meaningful than `feature`.
 
 ### Can I use traditional prefixes instead of emoji?
 
-Actually, yes. They work fine with the tooling. There are fewer to choose and
-are a little boring, but using Havoc scripts on an existing project is a great
-way to start. See the _Prior Art_ section below for the list of standard
+Actually, yes. They work fine with the tooling. There are fewer to choose from
+and are a little boring, but using Havoc scripts on an existing project is a
+great way to start. See the _Prior Art_ section below for the list of standard
 traditionals.
+
+## How is Conventional Havoc (CH) better than Conventional Commits (CC)?
+
+CC's prefies are redundant. Or they can't follow the imperative form. Here are
+a few options for the same example, all being sub-par.
+
+```
+fix: fix the email to customer       # redundant
+fix: the email to customer           # not imperative
+fix: unbreak the email to customer   # forced imperative
+```
+
+With CH, it is more natural, and the prefix feels like more of a supplement:
+
+```
+:bug: Fix the email to customer
+```
 
 ## Other supporting tools
 
