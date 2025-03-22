@@ -130,26 +130,75 @@ prefixes=( $(print -l $commits |cut -f1 -d' ' | sort -u) )
 
 # Print each bucket with all of its commit types in it.
 # Eg, feat bucket has sparkles/feat and books/docs together.
-buckets=( "$feat" "$bugs" "$misc" "$breaking" "$crises" )
-for bucket in $buckets
-do   curs=()
-     for c in $commits
-     do   pre=$(cut -f1 -d' ' <<< $c)
-          # This has the added benefit of selecting only the registered prefixes,
-          # so commit not following the proper pattern will be auto-discarded.
-          if [[ $bucketmap[$pre] == $bucket ]]
-          then # print -- p: $pre -- t: $trademojis[$pre]
-               # Prefix traditional style with emojis
-               trad="$trademojis[$pre]"
-               if [[ -n $trad ]]; then c="$trad $c"; fi
-               curs+=$c
+org_projwise () {
+     buckets=( "$feat" "$bugs" "$misc" "$breaking" "$crises" )
+     for bucket in $buckets
+     do   curs=()
+          for c in $commits
+          do   pre=$(cut -f1 -d' ' <<< $c)
+               # This has the added benefit of selecting only the registered prefixes,
+               # so commit not following the proper pattern will be auto-discarded.
+               if [[ $bucketmap[$pre] == $bucket ]]
+               then # print -- p: $pre -- t: $trademojis[$pre]
+                    # Prefix traditional style with emojis
+                    trad="$trademojis[$pre]"
+                    if [[ -n $trad ]]; then c="$trad $c"; fi
+                    curs+=$c
+               fi
+          done
+          if (( $#curs > 0 ))
+          then print "\n## $bucket";
+               print -n -- $theader
+               for x in $curs; do print -- "$bullet $x"; done
           fi
      done
-     if (( $#curs > 0 ))
-     then print "\n## $bucket\n";
-          print -n -- $theader
-          for x in $curs; do print -- "$bullet $x"; done
-     fi
-done
+}
+
+# Group commits into team sections
+org_teamwise () {
+     # Convert TSV to assoc array
+     estr=$( print -- 'declare -A devs=('
+             sed -r -e 's/\t/" "/g' -e 's/^/"/' -e 's/$/"/' devteams.tsv
+             print ')'
+         )
+     eval "$estr"
+
+     llmprompt2="Summarize the following git commits in a very short concise paragraph, without referring
+ to commit hashes, using git's ‘shortstat’ output at the end of each commit to quantify,
+ prioritize, and emphasize the magnitude and importance of the change,
+ without mentioning insertions or deletions.\n\n"
+
+     llmprompt2="Summarize the following git commits in a concisely,
+ grouped into key focus areas,
+ without referring
+ to commit hashes, using git's ‘shortstat’ output at the end of each commit to quantify,
+ prioritize, and emphasize the magnitude and importance of the change,
+ without mentioning insertions or deletions.\n\n"
+
+     # TODO Add buckets
+     for team in ${(uOn)devs}
+     do   print "\n\n## $team\n"
+          authors=()
+          for d in ${(k)devs}
+          do   if [[ ${devs[$d]} == $team ]]; then authors+="\\($d\\)"; fi
+          done
+          ( print $llmprompt2
+            git --no-pager log --shortstat  --author ${(j:\|:)authors} $range
+          ) | llm
+          print
+          # print "### Commits\n"
+          print -- 'git --no-pager log --oneline --pretty=format:"$fmt" --author' "${(j:\|:)authors} $range"
+          git --no-pager log --oneline --pretty=format:"$fmt" --author ${(j:\|:)authors} $range |
+               grep -E '^(feat|docs|fix|refactor|test|style):' |
+               sed -r 's/^/- /'
+          print
+     done
+
+}
+
+if (( -v teamwise ))
+then org_teamwise
+else org_projwise
+fi
 
 print -- "\n_This release was created with [havoc](https://github.com/MicahElliott/havoc)._"
