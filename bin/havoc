@@ -1,6 +1,6 @@
 #! /bin/zsh
 
-### havoc — creates a release that is uploaded to Github
+### havoc — interactively create a release that is uploaded to Github
 
 # This "release process" could be automated with github actions, but this
 # script is so simple that I'm not bothering for now. And I still push
@@ -83,7 +83,7 @@ then print "Can’t create release ‘$vdt’ for tag that alrealy exists!"
      exit 1
 fi
 
-print "\nCREATING NEW RELEASE: $newtag\n"
+print "\nCREATING NEW RELEASE: $newtag"
 
 projname=$(git config remote.origin.url | sed -e 's^.*/^^' -e 's/.git$//')
 releasedir=releases

@@ -10,15 +10,21 @@ newtag=$argv[2]
 range=$argv[3]
 dosummary=$argv[4]
 
+llmprompt="Summarize the following git commits in a couple concise paragraphs, without referring to commit hashes:\n\n"
+
 # Format of commit lines can be customized
 # Consider showing author name and date in defaults: %an, %aI
 # fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) (:sunglasses:%an)'}
 fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) — _%an_'}
 
+teamwise=${HAVOC_TEAMWISE}
+
 # Option and setup to print tables
 # If going tabular, just ignore any user-set commit format
 tabular=${HAVOC_TABULAR}
-bullet='-' theader=
+bullet='-'
+theader='
+'
 if [[ -n $tabular ]]
 then bullet='|'
      fmt='%s (%h) | %as | %an |'
@@ -110,12 +116,12 @@ commits=( "${(@f)$( git log --pretty=format:$fmt $=range )}" )
 if (( dosummary > 0 ))
 then print "\nGenerating an LLM summary; this can take a while...." >&2
      print "\n## :loudspeaker: Overview (LLM generated)\n"
-     ( print "Summarize the following git commits in a couple concise paragraphs, without referring to commit hashes:\n\n" ; git log $range ) | llm
+     ( print $llmprompt ; git log $range ) | llm
      # print
 fi
 
 if (( $#commits < 20 ))
-then print "\nCommits being considered for inclusion:\n${(j:\n:)commits}" >&2
+then print "\n\nCommits being considered for inclusion:\n${(j:\n:)commits}" >&2
 else print "\nToo many commits ($#commits) to show here." >&2
 fi
 
