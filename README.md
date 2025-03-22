@@ -142,6 +142,19 @@ fields (and header). This is a nice way to go especially if you install
 Content](https://github.com/Mottie/GitHub-userscripts/wiki/GitHub-sort-content)
 in your browser, for sorting any table.
 
+### Team Mode
+
+If you're in an org with multiple teams, you may want to organize
+commits/reporting accordingly. You can run in team mode with:
+
+```
+% HAVOC_TEAMWISE=1 havoc
+```
+
+That will print an additional summary for each team and create sections for
+each. The LLM prompt for teams is focused more on categorizing into noteworthy
+projects.
+
 ## Anti-features
 
 Havoc doesn't try to do anything smart with auto-creating versions according
