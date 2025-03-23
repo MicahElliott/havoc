@@ -1,5 +1,7 @@
 # Havoc
 
+<img align="right" width="120" height="100" title="Havoc logo" src="./hounds.png">
+
 > Cry 'Havoc,' and let slip the dogs of war
 > — _Mark Antony in Act 3, Scene 1 of Shakespeare's Julius Caesar_
 
