@@ -11,17 +11,17 @@
 # all its tools with:
 #   % eget micahelliott/captain
 
+havocver=v2025.10.13
+if [[ $argv[1] = '--version' ]]; then print "havoc $havocver"; exit; fi
+
 if ! [[ -d bin ]]; then print "WARNING: Expected to see executables in bin/ dir.\n"; fi
 
 pending=( $(git cherry -v 2>/dev/null) ); es=$?
-# print pending: $pending
-if (( $es > 0 ))
-then print "Must be on checked out branch"; exit $es
-fi
+if (( es > 0 )); then print "Must be on checked out branch"; exit $es; fi
 
-unpushed=$(wc -l <<< $pending); es=$?
+nunpushed=$(wc -l <<< $pending); es=$?
 if (( $#pending > 0 ))
-then print "WARNING: Detected local unpushed changes; you might want to push those and try again!\n"
+then print "WARNING: Detected $nunpushed local unpushed changes; you might want to push those and try again!\n"
      # exit 1 # allow it anyway in case intentional
 fi
 
@@ -35,11 +35,12 @@ isodt=$(date -I)
 # vdt=$dt$suffix
 
 # Get most recent tag and one before it
-tags=( $(git tag | tail -2) )
+# tags=( $(git tag | tail -2) )
+# if (( $#tags < 1 )); then print 'ERROR: no tags yet? Create one to get started.'; exit 1; fi
 lasttag=$(git tag | tail -1)
 # range=${(j:...:)tags}
 # range=$lasttag...$vdt
-range=$lasttag...
+# range="${lasttag}^..."
 
 branch=$(git branch --show-current)
 print "Working on git branch: $branch"
@@ -48,18 +49,27 @@ print "\nNeed to set up start/end points for release range."
 print "Tags and SHAs are matched on git history, Dates are recognized as YYYY-MM-DD."
 
 print "\nChoose a starting point:"
+if   [[ -z $lasttag ]]
+then run1=1 # first run ever, no tags yet
+     lasttag=$(git log --reverse --pretty=format:'%as' | head -1) # git bug with -1
+     print "(set to date of first commit, $lasttag, since detected this is your first run)"
+fi
 read "?tag|sha|date ($lasttag)> "
-if [[ -z $REPLY ]]; then start=$lasttag; else start=$REPLY; fi
+if [[ -z $REPLY ]]
+then start=$lasttag
+else start=$REPLY
+fi
 
-if [[ $start =~ [0-9]{4}-[0-9]{2}-[0-9]{2} ]]
+if   [[ $start =~ [0-9]{4}-[0-9]{2}-[0-9]{2} || -n $run1 ]]
 then hint="($isodt)" isdate=1 end=$isodt
-     else hint="($vdt)"
+     # print "*** start: $start -- end: $end" # TESTING
+else hint="($vdt)"
 fi
 
 print "Choose an ending point:"
 prompt="?tag|sha|date $hint> "
 read "$prompt"
-if [[ -z $REPLY ]]; then end= enddt=$isodt; else end=$REPLY; fi
+if [[ -z $REPLY ]]; then end='' enddt=$isodt; else end=$REPLY; fi
 
 if [[ -v isdate ]]; then startdt=$start enddt=$isodt; fi
 
@@ -68,18 +78,23 @@ read "?tag ($vdt)> "
 if [[ -z $REPLY ]]; then newtag=$vdt; else newtag=$REPLY; fi
 
 # Using dates requires different args/syntax, so translate to shas for consistent range
-if [[ $start =~ [0-9]{4}-[0-9]{2}-[0-9]{2} ]]
-   then allshas=( $(git log --reverse --pretty=format:'%h' --after $start --before $enddt) )
-     print allshas: $allshas
+if   [[ $start =~ [0-9]{4}-[0-9]{2}-[0-9]{2} ]]
+then allshas=( $(git log --reverse --pretty=format:'%h' --after $start --before $enddt) )
+     # print allshas: $allshas # TESTING
      start=$allshas[1] end=$allshas[-1]
 fi
-range="$start...$end"
+range="${start}^...${end}"
+if   [[ -v run1 ]]
+then print 'Skipping initial commit'
+     # Really, just working around git bug that fails when range is first ever commit
+     range="${start}..${end}"
+fi
 print "Using as commit selection range: $range"
 
 if git tag | grep -q "$vdt"
 then print "Can’t create release ‘$vdt’ for tag that alrealy exists!"
      print "Delete local and remote manually with:"
-     print "  git tag --delete $vdt; git push --delete origin $vdt"
+     print "  git tag --delete $vdt && git push --delete origin $vdt"
      exit 1
 fi
 
@@ -89,7 +104,7 @@ projname=$(git config remote.origin.url | sed -e 's^.*/^^' -e 's/.git$//')
 releasedir=releases
 if ! [[ -d $releasedir ]]
 then print "\nCreating ‘$releasedir’ dir; you should add it to ‘.gitignore’.";
-     mkdir $releasedir;
+     mkdir -p $releasedir;
 fi
 artifact=$releasedir/$projname-$vdt.tgz
 
@@ -153,9 +168,11 @@ git push origin $newtag || exit $?
 # print "You should have already created and pushed a git tag: $newtag"
 # print "Now manually upload $artifact to https://github.com/MicahElliott/$projname/releases"
 
-pushables=($doc)
-if [[ -v doasset ]]; then pushables=($doc $artifact $shasum); fi
+# pushables=($doc)
+pushables=()
+if [[ -v doasset ]]; then pushables=($artifact $shasum); fi
 
 print "\nCreating a new release on github with pushables:"
 print "  $pushables"
-gh release create -t "$newtag" -F $pushables
+# gh release create -t "$newtag" -F $doc $newtag $artifact $shasum # creates bad title with .md
+gh release create "$newtag" -t "$projname $newtag" -F - $pushables < $doc

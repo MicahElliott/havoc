@@ -12,28 +12,22 @@ dosummary=$argv[4]
 
 llmprompt="Summarize the following git commits in a couple concise paragraphs, without referring to commit hashes:\n\n"
 
-# Format of commit lines can be customized
-# Consider showing author name and date in defaults: %an, %aI
-# fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) (:sunglasses:%an)'}
-fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) — _%an_'}
-
-teamwise=${HAVOC_TEAMWISE}
-teamfile='devteams.tsv'
-
-# Option and setup to print tables
-# If going tabular, just ignore any user-set commit format
-tabular=${HAVOC_TABULAR}
-bullet='-'
-theader='
-'
-if [[ -n $tabular ]]
-then bullet='|'
-     fmt='%s (%h) | %as | %an |'
-     theader='
-| Message | Author | Date |
-|---------|--------|------|
-'
+# If using mutliple repos, need to be date-oriented since can't ask for begin/end SHAs for all repos
+if [[ -v HAVOC_MULTIREPOS ]]
+then print 'Running in multi-repo mode'
+     multirepos=1
+     daterange=( ${(s: :)HAVOC_DATERANGE} )
+     dateafter=$daterange[1] datebefore=$daterange[2]
+     range=" --after $dateafter --before $datebefore "
+     # Normalize/expand vars like $HOME/... into expanded form to create reusable $repos array
+     repos=()
+     for x in ${(s: :)HAVOC_MULTIREPOS}; do repos+=${(e)x}; done
+     for r in $repos; do git -C $r log -2; done
+else repos=( . )
 fi
+
+[[ -n $HAVOC_TEAMFILE ]] && teamfile=${(e)HAVOC_TEAMFILE}
+# teamfile='devteams.tsv'
 
 # print -- start: $start -- newtag: $newtag -- range: $range >&2
 
@@ -103,21 +97,64 @@ declare -A trademojis=(
      'breaking change:' ':boom:'
 )
 
-repo=$(git config remote.origin.url | sed -e 's/.*://' -e 's/.git$//')
-ghurl='https://github.com/'
-# repo="MicahElliott/captain"
-url="$ghurl$repo"
+for r in $repos
+do   # Infer URL for repo and changelog link
+     repo=$(git -C $r config remote.origin.url | sed -e 's/.*://' -e 's/.git$//') # repo="MicahElliott/captain"
+     ghurl='https://github.com/'
+     url="$ghurl$repo"
+     releaseurl="$url/releases/tag/$newtag"
+     print "**[Full $repo:t Changelog]($url/compare/$start...$newtag)**"
+done
 
-releaseurl="$url/releases/tag/$newtag"
-print "**[Full Changelog]($url/compare/$start...$newtag)**"
 
-# Read formatted commits into array
+# Format of commit lines can be customized
+# Consider showing author name and date in defaults: %an, %aI
+# fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) (:sunglasses:%an)'}
+fmt=${HAVOC_COMMIT_FORMAT-'%s (%h) — _%an_'}
+
+# Option and setup to print tables
+# If going tabular, just ignore any user-set commit format
+tabular=${HAVOC_TABULAR}
+bullet='-'
+theader='
+'
+if [[ -n $tabular ]]
+then bullet='|'
+     if [[ -v multirepos ]]
+     then # Include repos if multi-repo mode
+     fmt='%s (%h) | %an | %as | $repo |'
+     theader='
+| Message | Author | Date | Repo |
+|---------|--------|------|------|
+'
+     else
+     fmt='%s (%h) | %an | %as |'
+     theader='
+| Message | Author | Date |
+|---------|--------|------|
+'
+     fi
+else [[ -v multirepos ]] && fmt+=' [$repo]'
+fi
+
 commits=( "${(@f)$( git log --pretty=format:$fmt $=range )}" )
+
+# Experimental approach to multi-repo, NIU
+# commits=()
+# for r in $repos
+# do   # Read formatted commits into array
+#      commits+="${(@f)$( git -C $r log --pretty=format:$fmt $=range )}"
+# done
+# print -- COMMITS1: $commits[1] '\n\n' >&2
 
 if (( dosummary > 0 ))
 then print "\nGenerating an LLM summary; this can take a while...." >&2
      print "\n## :loudspeaker: Overview (LLM generated)\n"
-     ( print $llmprompt ; git log $range ) | llm
+     # print $llmprompt >&2
+     # for r in $repos; do git -C $r log $=range >&2; done
+     ( print $llmprompt
+       for r in $repos; do git -C $r log $=range; done
+     ) | llm
      # print
 fi
 
@@ -127,7 +164,7 @@ else print "\nToo many commits ($#commits) to show here." >&2
 fi
 
 prefixes=( $(print -l $commits |cut -f1 -d' ' | sort -u) )
-# print prefixes: $prefixes >2
+# print PREFIXES: $prefixes >&2
 
 # Print each bucket with all of its commit types in it.
 # Eg, feat bucket has sparkles/feat and books/docs together.
@@ -135,12 +172,13 @@ org_projwise () {
      buckets=( "$feat" "$bugs" "$misc" "$breaking" "$crises" )
      for bucket in $buckets
      do   curs=()
-          for c in $commits
+          for  c in $commits
           do   pre=$(cut -f1 -d' ' <<< $c)
                # This has the added benefit of selecting only the registered prefixes,
                # so commit not following the proper pattern will be auto-discarded.
+               # print -- PRE: $pre -- BUCKET: $bucket -- BMP: $bucketmap[$pre] >&2
                if [[ $bucketmap[$pre] == $bucket ]]
-               then # print -- p: $pre -- t: $trademojis[$pre]
+               then # print -- p: $pre -- t: $trademojis[$pre] >&2
                     # Prefix traditional style with emojis
                     trad="$trademojis[$pre]"
                     if [[ -n $trad ]]; then c="$trad $c"; fi
@@ -183,21 +221,28 @@ org_teamwise () {
           for d in ${(k)devs}
           do   if [[ ${devs[$d]} == $team ]]; then authors+="\\($d\\)"; fi
           done
+          # Summarize all commits to feed into LLM
           ( print $llmprompt2
-            git --no-pager log --shortstat  --author ${(j:\|:)authors} $range
+            for r in $repos
+            do   git -C $r --no-pager log --shortstat  --author ${(j:\|:)authors} $=range
+            done
           ) | llm
           print
+          # Make bulletted or tabular list of commits printed to report.
+          # for r in $repos; do ...
           # print "### Commits\n"
-          print -- 'git --no-pager log --oneline --pretty=format:"$fmt" --author' "${(j:\|:)authors} $range"
-          git --no-pager log --oneline --pretty=format:"$fmt" --author ${(j:\|:)authors} $range |
-               grep -E '^(feat|docs|fix|refactor|test|style):' |
-               sed -r 's/^/- /'
+          # print -- 'git -C $r --no-pager log --oneline --pretty=format:"$fmt" --author' "${(j:\|:)authors} $=range"
+          for r in $repos
+          do git -C $r --no-pager log --oneline --pretty=format:"$fmt" --author ${(j:\|:)authors} $=range |
+                    grep -E '^(feat|docs|fix|refactor|test|style):' |
+                    sed -r 's/^/- /'
+          done
           print
      done
 
 }
 
-if (( -v teamwise ))
+if [[ -v teamfile ]]
 then org_teamwise
 else org_projwise
 fi

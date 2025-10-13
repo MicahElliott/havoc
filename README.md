@@ -1,8 +1,8 @@
-# Havoc
+# Havoc -- create a release suited for publishing to Github
 
 <img align="right" width="120" height="100" title="Havoc logo" src="./hounds.png">
 
-> Cry 'Havoc,' and let slip the dogs of war
+> Cry 'Havoc,' and let slip the dogs of war  
 > — _Mark Antony in Act 3, Scene 1 of Shakespeare's Julius Caesar_
 
 Check out Havoc's [Releases
@@ -13,7 +13,7 @@ Read [The Havoc Commit Spec](https://micahelliott.github.io/havoc/) for
 details on making standard commits that will show up beautifully in a
 _"Release Doc"_.
 
-This is a very simple couple of scripts that create a documented "Release"
+This is a simple couple of scripts that create a documented "Release"
 suited for publishing; eg, to Github. Any executable script(s)/binarie(s) can
 become something that is a "releasable package" with documentation and a
 predictable set of artifacts. Then your users can quickly discover, download,
@@ -30,7 +30,13 @@ as a pretty release page (that passes
 Havoc's eponymous main script (which is all you need to invoke) creates a
 release that is uploaded to Github (and others maybe someday).
 
-## Dependencies
+## Installation
+
+If you use [eget](https://github.com/zyedidia/eget) (highly recommended!),
+simply run: `eget micahelliott/havoc`. Othewise, you can download `havoc` and
+`wardoc` from [bin/](./bin) to somewhere on your `$PATH`.
+
+### Dependencies
 
 Havoc should run fine on **any Linux or Mac or WSL**.
 
@@ -41,12 +47,6 @@ Havoc should run fine on **any Linux or Mac or WSL**.
 
 - _[OPTIONAL]_ If you have **[bat](https://github.com/sharkdp/bat)**
   installed, you will see a nicer local display of the generated doc.
-
-## Install
-
-If you use [eget](https://github.com/zyedidia/eget) (highly recommended!),
-simply run: `eget micahelliott/havoc`. Othewise, you can download `havoc` and
-`wardoc` from [bin/](./bin) to somewhere on your `$PATH`.
 
 ## Usage
 
@@ -61,6 +61,8 @@ mkdir bin releases; mv MYRUNNABLES bin
 You may want to add `releases/` to `.gitignore` since it will end up with a
 bunch of tarballs. Which is kinda the point of having a separate dir for this.
 Or something like [git-lfs](https://github.com/git-lfs/git-lfs) could be used.
+
+> ![NOTE] Don't create/push "git tags" yourself -- havoc manages tags for you!
 
 Generate a "git release doc/tag" file, `releases/v2025.02.02.md`, and release
 tarball:
