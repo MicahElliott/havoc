@@ -12,9 +12,20 @@
 #   % eget micahelliott/captain
 
 havocver=v2025.10.13
+
+releasedir=releases
+
+# pushables=($doc)
+pushables=()
+
 if [[ $argv[1] = '--version' ]]; then print "havoc $havocver"; exit; fi
 
 if ! [[ -d bin ]]; then print "WARNING: Expected to see executables in bin/ dir.\n"; fi
+
+originurl=$(git config --get remote.origin.url) # git@github.com:MicahElliott/havoc.git
+urlparts=( ${(s/:/)originurl} )
+fullrepo=$urlparts[2]:r # MicahElliott/havoc
+projname=$fullrepo:t    # havoc
 
 pending=( $(git cherry -v 2>/dev/null) ); es=$?
 if (( es > 0 )); then print "Must be on checked out branch"; exit $es; fi
@@ -100,8 +111,6 @@ fi
 
 print "\nCREATING NEW RELEASE: $newtag"
 
-projname=$(git config remote.origin.url | sed -e 's^.*/^^' -e 's/.git$//')
-releasedir=releases
 if ! [[ -d $releasedir ]]
 then print "\nCreating ‘$releasedir’ dir; you should add it to ‘.gitignore’.";
      mkdir -p $releasedir;
@@ -126,6 +135,20 @@ ncommits=$(git log --oneline $range | wc -l)
 print "\nThere are $ncommits commits going into this release."
 if (( ncommits > 10 ))
 then print "That’s quite a few, so you could consider skipping LLM generation for time/cost concerns."
+fi
+
+if   command -v manget >/dev/null
+then print '\nLooks like manget is present.'
+     if   read -qk '?Generate man page?> [y/n] '
+     then print '\n'
+          # Seems ok for man page to reside in tarball (and end up also in bin)
+          # print -- MANGET_SOURCEDOC=./README.md MANGET_DESTDIR=$releasedir manget $fullrepo
+          MANGET_SOURCEDOC=./README.md MANGET_DESTDIR=$releasedir manget $fullrepo
+          manpage=$releasedir/man1r/$projname.1r.gz
+          pushables+=$manpage # important location for distribution
+     fi
+else print 'You may want to install ‘manget’ to generate man pages from your Readme:'
+     print '  https://github.com/MicahElliott/manget\n'
 fi
 
 dosummary=0
@@ -168,11 +191,10 @@ git push origin $newtag || exit $?
 # print "You should have already created and pushed a git tag: $newtag"
 # print "Now manually upload $artifact to https://github.com/MicahElliott/$projname/releases"
 
-# pushables=($doc)
-pushables=()
-if [[ -v doasset ]]; then pushables=($artifact $shasum); fi
+if [[ -v doasset ]]; then pushables+=( $artifact $shasum ); fi
 
 print "\nCreating a new release on github with pushables:"
 print "  $pushables"
 # gh release create -t "$newtag" -F $doc $newtag $artifact $shasum # creates bad title with .md
+
 gh release create "$newtag" -t "$projname $newtag" -F - $pushables < $doc

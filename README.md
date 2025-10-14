@@ -9,15 +9,22 @@ Check out Havoc's [Releases
 page](https://github.com/MicahElliott/havoc/releases) (also on right sidebar)
 for examples of what it does!
 
+## Synopsis
+
+```shell
+% HAVOC_OPT=... havoc
+Creating artifacts ...
+```
+
 Read [The Havoc Commit Spec](https://micahelliott.github.io/havoc/) for
 details on making standard commits that will show up beautifully in a
 _"Release Doc"_.
 
-This is a simple couple of scripts that create a documented "Release"
-suited for publishing; eg, to Github. Any executable script(s)/binarie(s) can
-become something that is a "releasable package" with documentation and a
-predictable set of artifacts. Then your users can quickly discover, download,
-and run your work with minimal effort.
+This is a simple couple of scripts that interactively create a documented
+"Release" suited for publishing; eg, to Github. Any executable
+script(s)/binarie(s) can become something that is a "releasable package" with
+realease documentation and a predictable set of artifacts. Then your users can
+quickly discover, download, understand, and run your work with minimal effort.
 
 One of Havoc's goals is to **make releases consistent**. If you browse across
 various projects' _Release_ pages, you won't see two that are alike!
@@ -28,12 +35,22 @@ as a pretty release page (that passes
 [markdownlint](https://github.com/markdownlint/markdownlint) if you care).
 
 Havoc's eponymous main script (which is all you need to invoke) creates a
-release that is uploaded to Github (and others maybe someday).
+release that is uploaded to Github release pages (and others maybe someday).
+The release consists of:
+
+- a "release doc" capturing all changes since prior release (or inception);
+  this becomes your release page and is published on github as such
+- a tarball (`myproj.tgz`) containing your binaries from your `bin/`
+- a matching checksum (`myproj.tgz.sha256`)
+- a generated man page (`myproj.1r.gz`), if `manget` is installed
+
+Tools like `eget` can leverage all of those to give your users a trivial
+install experience.
 
 ## Installation
 
 If you use [eget](https://github.com/zyedidia/eget) (highly recommended!),
-simply run: `eget micahelliott/havoc`. Othewise, you can download `havoc` and
+simply run: `eget micahelliott/havoc`. Otherwise, you can download `havoc` and
 `wardoc` from [bin/](./bin) to somewhere on your `$PATH`.
 
 ### Dependencies
@@ -44,6 +61,11 @@ Havoc should run fine on **any Linux or Mac or WSL**.
   Github CLI)** installed.
 
 - _[OPTIONAL]_ Generating a summary relies on **[llm cli](https://github.com/simonw/llm)**.
+
+- _[OPTIONAL]_ If you have
+  **[manget](https://github.com/MicahElliott/manget)** installed, you can
+  generate and publish a man page (automatically generated from README) as
+  another convenient artifact.
 
 - _[OPTIONAL]_ If you have **[bat](https://github.com/sharkdp/bat)**
   installed, you will see a nicer local display of the generated doc.
