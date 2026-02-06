@@ -144,7 +144,7 @@ then print '\nLooks like manget is present.'
           # Seems ok for man page to reside in tarball (and end up also in bin)
           # print -- MANGET_SOURCEDOC=./README.md MANGET_DESTDIR=$releasedir manget $fullrepo
           MANGET_SOURCEDOC=./README.md MANGET_DESTDIR=$releasedir manget $fullrepo
-          manpage=$releasedir/man1r/$projname.1r.gz
+          manpage=$releasedir/man1/$projname.1.gz
           pushables+=$manpage # important location for distribution
      fi
 else print 'You may want to install ‘manget’ to generate man pages from your Readme:'

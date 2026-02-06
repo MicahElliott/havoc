@@ -1,4 +1,4 @@
-# Havoc -- create a release suited for publishing to Github
+# Havoc -- create and publish a release to Github
 
 <img align="right" width="120" height="100" title="Havoc logo" src="./hounds.png">
 
@@ -42,7 +42,7 @@ The release consists of:
   this becomes your release page and is published on github as such
 - a tarball (`myproj.tgz`) containing your binaries from your `bin/`
 - a matching checksum (`myproj.tgz.sha256`)
-- a generated man page (`myproj.1r.gz`), if `manget` is installed
+- a generated man page (`myproj.1.gz`), if `manget` is installed
 
 Tools like `eget` can leverage all of those to give your users a trivial
 install experience.
@@ -84,7 +84,8 @@ You may want to add `releases/` to `.gitignore` since it will end up with a
 bunch of tarballs. Which is kinda the point of having a separate dir for this.
 Or something like [git-lfs](https://github.com/git-lfs/git-lfs) could be used.
 
-> ![NOTE] Don't create/push "git tags" yourself -- havoc manages tags for you!
+> [!IMPORTANT]
+> Don't create/push "git tags" yourself -- havoc manages tags for you!
 
 Generate a "git release doc/tag" file, `releases/v2025.02.02.md`, and release
 tarball:
