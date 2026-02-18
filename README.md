@@ -130,6 +130,10 @@ The (editable) Markdown file looks something like this:
 _This release was created with [havoc](https://github.com/MicahElliott/havoc)._
 ```
 
+> [!NOTE]
+> Github's release pages don't support wrapped lines. So if your editor breaks
+> at say 80-chars, turn off its "fill" setting.
+
 ## Advanced usage (optional)
 
 ### Frequent releases
