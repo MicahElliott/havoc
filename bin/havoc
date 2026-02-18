@@ -12,7 +12,7 @@
 # all its tools with:
 #   % eget micahelliott/captain
 
-havocver=v2025.10.13
+havocver=v2026.02.18
 
 releasedir=releases
 
