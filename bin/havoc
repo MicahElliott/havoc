@@ -53,7 +53,7 @@ lasttag=$(git tag | tail -1)
 # range=$lasttag...$vdt
 # range="${lasttag}^..."
 
-branch=$(git branch --show-current)
+branch=$(git branch --show-current) # main
 print "Working on git branch: $branch"
 
 print "\nNeed to set up start/end points for release range."
@@ -137,6 +137,7 @@ if (( ncommits > 10 ))
 then print "That’s quite a few, so you could consider skipping LLM generation for time/cost concerns."
 fi
 
+# Manget
 if   command -v manget >/dev/null
 then print '\nLooks like manget is present.'
      if   read -qk '?Generate man page?> [y/n] '

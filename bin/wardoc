@@ -247,4 +247,4 @@ then org_teamwise
 else org_projwise
 fi
 
-print -- "\n_This release was created with [havoc](https://github.com/MicahElliott/havoc)._"
+print -- "\n_This release was created with [havoc](https://github.com/MicahElliott/havoc) and can be most easily installed with [eget](https://github.com/zyedidia/eget)._"
